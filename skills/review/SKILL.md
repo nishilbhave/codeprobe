@@ -87,10 +87,11 @@ Before routing to any sub-skill, detect the technology stack at the target path.
 
 ### Reference Loading
 
-References are loaded from the `references/` directory relative to this skill. Use Read with the path:
+References are loaded from the `references/` directory within this skill's own directory. Resolve the path relative to this SKILL.md file's location, NOT the user's project. Use Read with:
 ```
-skills/review/references/{reference-file}.md
+references/{reference-file}.md
 ```
+(This resolves to the `references/` folder next to this SKILL.md file.)
 
 If a reference file does not exist, continue without it. Never fail the review because a reference is missing.
 
@@ -176,7 +177,7 @@ Every finding from every sub-skill MUST include these fields:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `id` | Yes | Unique identifier in format `{PREFIX}-{NNN}` (e.g., `SOLID-001`, `SEC-003`) |
+| `id` | Yes | Unique identifier in format `{PREFIX}-{NNN}` (e.g., `SRP-001`, `SEC-003`) |
 | `severity` | Yes | One of: `critical`, `major`, `minor`, `suggestion` |
 | `location` | Yes | File path + line range (e.g., `src/UserService.php:45-67`) |
 | `problem` | Yes | One sentence describing the issue |
@@ -188,7 +189,7 @@ Every finding from every sub-skill MUST include these fields:
 ### Finding Format Example
 
 ```
-### SOLID-001 | Major | `src/UserService.php:45-67`
+### SRP-001 | Major | `src/UserService.php:45-67`
 
 **Problem:** UserService violates Single Responsibility — handles authentication, email sending, and database queries in one class.
 

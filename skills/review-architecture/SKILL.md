@@ -101,11 +101,13 @@ This sub-skill detects architectural and structural issues across these categori
 
 ## Using `file_stats.py`
 
-When available, run the following command via Bash to get LOC, class count, and method count per file:
+When available, run the file_stats.py script via Bash to get LOC, class count, and method count per file. The script is located in the `review` skill's `scripts/` directory (resolve relative to the skill installation, not the user's project):
 
 ```bash
-python3 ../review/scripts/file_stats.py <target_path>
+python3 scripts/file_stats.py <target_path>
 ```
+
+Note: The orchestrator typically runs this script and passes results. If invoked standalone, locate the script in the sibling `review/scripts/` directory.
 
 Use this data to:
 - Identify god objects (files > 500 LOC, classes with 20+ methods)

@@ -42,8 +42,8 @@ RECOGNIZED_EXTENSIONS: Set[str] = {
 # Patterns for test file detection
 TEST_DIR_NAMES: Set[str] = {"test", "tests", "__tests__", "spec"}
 TEST_FILE_PATTERNS: List[re.Pattern] = [
-    re.compile(r"test", re.IGNORECASE),
-    re.compile(r"spec", re.IGNORECASE),
+    re.compile(r"(?:^test_|_test\.|\.test\.|Test[A-Z])", re.IGNORECASE),
+    re.compile(r"(?:^spec_|_spec\.|\.spec\.)", re.IGNORECASE),
 ]
 
 # Comment line patterns (basic heuristic)
