@@ -1,5 +1,5 @@
 <!--
-  Template for /review audit output.
+  Template for /probe audit output.
   The orchestrator reads this template and fills {placeholders} with actual data.
   Render as markdown in the user's terminal.
 

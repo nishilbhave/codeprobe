@@ -43,32 +43,32 @@ cd code-review-claude
 ### Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- Python 3.8+ (optional -- enables `/review health` statistics)
+- Python 3.8+ (optional -- enables `/probe health` statistics)
 
 Then in any project:
 
 ```
-/review audit .
+/probe audit .
 ```
 
 ## Available Commands
 
 | Command | Description | Status |
 |---------|-------------|--------|
-| `/review audit <path>` | Full audit -- all 9 categories, detailed findings, refactoring roadmap | Available |
-| `/review solid <path>` | SOLID principles analysis | Available |
-| `/review security <path>` | Security vulnerability detection | Available |
-| `/review smells <path>` | Code smell detection | Available |
-| `/review architecture <path>` | Architecture and dependency analysis | Available |
-| `/review patterns <path>` | Design patterns analysis | Available |
-| `/review performance <path>` | Performance audit | Available |
-| `/review errors <path>` | Error handling audit | Available |
-| `/review tests <path>` | Test quality audit | Available |
-| `/review framework <path>` | Framework best practices | Available |
-| `/review quick <path>` | Top 5 most impactful issues with fix prompts | Available |
-| `/review health <path>` | Codebase vitals dashboard -- scores + file statistics | Available |
-| `/review diff [branch]` | PR-style review of changed files | Phase 3 |
-| `/review report` | Generate report from last audit | Phase 3 |
+| `/probe audit <path>` | Full audit -- all 9 categories, detailed findings, refactoring roadmap | Available |
+| `/probe solid <path>` | SOLID principles analysis | Available |
+| `/probe security <path>` | Security vulnerability detection | Available |
+| `/probe smells <path>` | Code smell detection | Available |
+| `/probe architecture <path>` | Architecture and dependency analysis | Available |
+| `/probe patterns <path>` | Design patterns analysis | Available |
+| `/probe performance <path>` | Performance audit | Available |
+| `/probe errors <path>` | Error handling audit | Available |
+| `/probe tests <path>` | Test quality audit | Available |
+| `/probe framework <path>` | Framework best practices | Available |
+| `/probe quick <path>` | Top 5 most impactful issues with fix prompts | Available |
+| `/probe health <path>` | Codebase vitals dashboard -- scores + file statistics | Available |
+| `/probe diff [branch]` | PR-style review of changed files | Phase 3 |
+| `/probe report` | Generate report from last audit | Phase 3 |
 
 If no path is given, the current working directory is used.
 
@@ -76,19 +76,19 @@ If no path is given, the current working directory is used.
 
 The system uses an **orchestrator + sub-skill** architecture:
 
-1. **Orchestrator** (`skills/review/SKILL.md`) -- Routes commands, detects your tech stack, loads config, and invokes specialized sub-skills.
+1. **Orchestrator** (`skills/probe/SKILL.md`) -- Routes commands, detects your tech stack, loads config, and invokes specialized sub-skills.
 2. **Sub-skills** -- Domain experts that each analyze one category:
-   - `review-security` -- SQL injection, XSS, hardcoded secrets, auth issues
-   - `review-error-handling` -- Swallowed exceptions, missing try/catch, transaction safety
-   - `review-solid` -- Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
-   - `review-architecture` -- Coupling, layering violations, circular dependencies, god objects
-   - `review-patterns` -- Design pattern opportunities and anti-patterns
-   - `review-performance` -- N+1 queries, unbounded queries, algorithmic efficiency, caching
-   - `review-code-smells` -- Long methods, deep nesting, duplicate code, primitive obsession
-   - `review-testing` -- Missing tests, test smells, mock abuse, coverage gaps
-   - `review-framework` -- Laravel, React/Next.js, Python/Django framework idiom violations
-3. **Reference guides** (`skills/review/references/`) -- Stack-specific best practices loaded based on auto-detected languages.
-4. **Scripts** (`skills/review/scripts/`) -- Deterministic analysis utilities:
+   - `probe-security` -- SQL injection, XSS, hardcoded secrets, auth issues
+   - `probe-error-handling` -- Swallowed exceptions, missing try/catch, transaction safety
+   - `probe-solid` -- Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
+   - `probe-architecture` -- Coupling, layering violations, circular dependencies, god objects
+   - `probe-patterns` -- Design pattern opportunities and anti-patterns
+   - `probe-performance` -- N+1 queries, unbounded queries, algorithmic efficiency, caching
+   - `probe-code-smells` -- Long methods, deep nesting, duplicate code, primitive obsession
+   - `probe-testing` -- Missing tests, test smells, mock abuse, coverage gaps
+   - `probe-framework` -- Laravel, React/Next.js, Python/Django framework idiom violations
+3. **Reference guides** (`skills/probe/references/`) -- Stack-specific best practices loaded based on auto-detected languages.
+4. **Scripts** (`skills/probe/scripts/`) -- Deterministic analysis utilities:
    - `file_stats.py` -- LOC, file counts, method counts per file
    - `complexity_scorer.py` -- Cyclomatic complexity per function
    - `dependency_mapper.py` -- Import graph and circular dependency detection
@@ -119,7 +119,7 @@ Each finding includes: ID, severity, file location, problem description, evidenc
 
 ## Configuration
 
-Create a `.review-config.json` in your project root to customize behavior:
+Create a `.probe-config.json` in your project root to customize behavior:
 
 ```json
 {
@@ -129,7 +129,7 @@ Create a `.review-config.json` in your project root to customize behavior:
     "deep_nesting_max": 4,
     "max_constructor_deps": 6
   },
-  "skip_categories": ["review-testing"],
+  "skip_categories": ["probe-testing"],
   "skip_rules": ["SPEC-GEN-001"],
   "framework": "laravel",
   "extra_references": [],

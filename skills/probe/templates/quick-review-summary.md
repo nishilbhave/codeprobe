@@ -1,5 +1,5 @@
 <!--
-  Template for /review quick output.
+  Template for /probe quick output.
   The orchestrator reads this template and fills {placeholders} with actual data.
   Render as markdown in the user's terminal.
 
@@ -32,7 +32,7 @@
 
 **Estimated Score:** ~{score}/100
 
-Run `/review audit {path}` for the full report with all findings, evidence, and refactoring roadmap.
+Run `/probe audit {path}` for the full report with all findings, evidence, and refactoring roadmap.
 
 ---
 

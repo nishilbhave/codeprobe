@@ -1,5 +1,5 @@
 ---
-name: review-testing
+name: probe-testing
 description: >
   Audits code for test quality and coverage issues — missing tests, test smells,
   poor test structure, mock abuse, coverage gaps, and fragile test data. Identifies
@@ -98,7 +98,7 @@ This sub-skill detects test quality and coverage issues across six categories:
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHPUnit/Pest testing patterns
 - `javascript-typescript.md` for Jest/Vitest testing patterns
@@ -182,7 +182,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-testing",
+  "skill": "probe-testing",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

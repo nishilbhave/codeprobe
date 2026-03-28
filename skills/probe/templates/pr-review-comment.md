@@ -1,5 +1,5 @@
 <!--
-  Template for /review diff output formatted as a GitHub PR review comment.
+  Template for /probe diff output formatted as a GitHub PR review comment.
   The orchestrator reads this template and fills {placeholders} with actual data.
   Render as markdown suitable for posting as a GitHub PR comment.
 

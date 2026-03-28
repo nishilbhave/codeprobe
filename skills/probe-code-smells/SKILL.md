@@ -1,9 +1,9 @@
 ---
-name: review-code-smells
+name: probe-code-smells
 description: >
   Detects code smells and anti-patterns — long methods, large classes, feature envy,
   data clumps, primitive obsession, dead code, magic numbers, deep nesting, and more.
-  Uses configurable thresholds from .review-config.json when available.
+  Uses configurable thresholds from .probe-config.json when available.
   Trigger phrases: "code smells", "smell check", "anti-patterns", "clean code review".
 allowed-tools:
   - Read
@@ -47,7 +47,7 @@ This sub-skill detects code smells and anti-patterns organized into these catego
 
 ### Configurable Thresholds
 
-Before analysis, check for a `.review-config.json` file in the project root. If present, load the `severity_overrides` section to adjust these defaults:
+Before analysis, check for a `.probe-config.json` file in the project root. If present, load the `severity_overrides` section to adjust these defaults:
 
 | Threshold | Config Key | Default |
 |-----------|-----------|---------|
@@ -105,7 +105,7 @@ Before analysis, check for a `.review-config.json` file in the project root. If 
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHP/Laravel projects
 - `javascript-typescript.md` for JS/TS projects
@@ -189,7 +189,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-code-smells",
+  "skill": "probe-code-smells",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

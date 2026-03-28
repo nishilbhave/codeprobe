@@ -1,5 +1,5 @@
 ---
-name: review-framework
+name: probe-framework
 description: >
   Detects framework-specific anti-patterns, convention violations, and idiom misuse
   across PHP/Laravel, React/Next.js, and Python/Django/FastAPI codebases. Loads
@@ -44,10 +44,10 @@ This sub-skill detects framework-specific anti-patterns and convention violation
 ## What It Does NOT Flag
 
 - **Issues already covered by other sub-skills** even if they appear in framework code. Specifically:
-  - Security issues in framework code → covered by `review-security` (SEC)
-  - SOLID violations in framework classes → covered by `review-solid` (SRP/OCP/etc.)
-  - Performance issues like N+1 queries → covered by `review-performance` (PERF)
-  - Error handling in framework middleware → covered by `review-error-handling` (ERR)
+  - Security issues in framework code → covered by `probe-security` (SEC)
+  - SOLID violations in framework classes → covered by `probe-solid` (SRP/OCP/etc.)
+  - Performance issues like N+1 queries → covered by `probe-performance` (PERF)
+  - Error handling in framework middleware → covered by `probe-error-handling` (ERR)
 - This sub-skill focuses exclusively on **framework idiom violations** — using the framework incorrectly or ignoring its conventions.
 - **Framework-generated boilerplate files** (migration stubs, config defaults, scaffolded controllers).
 - **Intentional deviations** from framework conventions with clear comments explaining the reason.
@@ -100,7 +100,7 @@ This sub-skill detects framework-specific anti-patterns and convention violation
 
 ## Reference Loading
 
-This sub-skill relies heavily on reference files. Load the detected framework's reference from `../review/references/{file}.md` using Read. Available references include:
+This sub-skill relies heavily on reference files. Load the detected framework's reference from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for Laravel projects — Eloquent patterns, service container, facades
 - `react-nextjs.md` for React/Next.js projects — component patterns, hooks rules, rendering strategies
@@ -183,7 +183,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-framework",
+  "skill": "probe-framework",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

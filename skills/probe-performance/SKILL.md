@@ -1,5 +1,5 @@
 ---
-name: review-performance
+name: probe-performance
 description: >
   Scans code for performance and scalability issues — N+1 queries, missing indexes,
   unbounded queries, memory inefficiencies, caching gaps, algorithmic complexity,
@@ -115,7 +115,7 @@ This sub-skill detects performance and scalability issues across these categorie
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `sql-database.md` for N+1, index, and query optimization patterns
 - `php-laravel.md` for Eloquent eager loading, caching, queue patterns
@@ -126,7 +126,7 @@ If the reference file is unavailable, continue the analysis without it.
 
 ### Optional Script Integration
 
-When `scripts/complexity_scorer.py` output is available (run by the orchestrator during `/review health` or `/review audit`), use it to identify high-complexity functions as performance hot-spot candidates. Functions rated "high" or "very_high" that also appear in hot paths (request handlers, loop bodies, frequently-called utilities) are strong signals for algorithmic efficiency findings.
+When `scripts/complexity_scorer.py` output is available (run by the orchestrator during `/probe health` or `/probe audit`), use it to identify high-complexity functions as performance hot-spot candidates. Functions rated "high" or "very_high" that also appear in hot paths (request handlers, loop bodies, frequently-called utilities) are strong signals for algorithmic efficiency findings.
 
 ---
 
@@ -202,7 +202,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-performance",
+  "skill": "probe-performance",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

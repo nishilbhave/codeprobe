@@ -1,5 +1,5 @@
 ---
-name: review-security
+name: probe-security
 description: >
   Scans code for security vulnerabilities — injection flaws, authentication gaps,
   XSS vectors, mass assignment, CSRF, insecure deserialization, sensitive data exposure,
@@ -125,7 +125,7 @@ This sub-skill detects security vulnerabilities across these categories:
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHP/Laravel projects (mass assignment, Blade XSS, middleware patterns)
 - `javascript-typescript.md` for JS/TS projects (XSS in React/Vue, prototype pollution)
@@ -208,7 +208,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-security",
+  "skill": "probe-security",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

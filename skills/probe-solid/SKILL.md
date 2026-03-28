@@ -1,5 +1,5 @@
 ---
-name: review-solid
+name: probe-solid
 description: >
   Audits code for SOLID principle violations — Single Responsibility, Open/Closed,
   Liskov Substitution, Interface Segregation, and Dependency Inversion. Identifies
@@ -89,7 +89,7 @@ This sub-skill detects violations of the five SOLID principles:
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHP/Laravel projects
 - `javascript-typescript.md` for JS/TS projects
@@ -177,7 +177,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-solid",
+  "skill": "probe-solid",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

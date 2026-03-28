@@ -35,13 +35,13 @@ code-review-claude/
 │   │   └── scripts/
 │   │       └── file_stats.py
 │   │
-│   ├── review-solid/
+│   ├── probe-solid/
 │   │   └── SKILL.md
-│   ├── review-security/
+│   ├── probe-security/
 │   │   └── SKILL.md
-│   ├── review-code-smells/
+│   ├── probe-code-smells/
 │   │   └── SKILL.md
-│   └── review-architecture/
+│   └── probe-architecture/
 │       └── SKILL.md
 │
 ├── install.sh
@@ -55,7 +55,7 @@ code-review-claude/
 
 ---
 
-## Orchestrator: `review/SKILL.md`
+## Orchestrator: `probe/SKILL.md`
 
 ### Frontmatter
 
@@ -88,7 +88,7 @@ metadata:
 
 1. **Parse command** — extract subcommand and target path from user input
 2. **Auto-detect stack** — scan file extensions and imports at target path, determine which `references/*.md` to load
-3. **Read config** — load `.review-config.json` from project root if present
+3. **Read config** — load `.probe-config.json` from project root if present
 4. **Route to sub-skills** — single-domain commands route directly; `audit` runs all sub-skills; `quick` does a lightweight pass
 5. **Aggregate findings** — collect outputs from all invoked sub-skills, deduplicate, sort by severity
 6. **Score** — apply weighted scoring formula (spec section 9)
@@ -98,13 +98,13 @@ metadata:
 
 | Command | Behavior | Sub-skills |
 |---------|----------|------------|
-| `/review audit <path>` | Full audit, sequential execution | All 4 sub-skills |
-| `/review solid <path>` | SOLID principles only | `review-solid` |
-| `/review security <path>` | Security audit only | `review-security` |
-| `/review smells <path>` | Code smells only | `review-code-smells` |
-| `/review architecture <path>` | Architecture analysis only | `review-architecture` |
-| `/review quick <path>` | Top 5 issues — reads files, runs all sub-skills in scan mode (skip evidence/fix-prompt generation), ranks by severity, returns top 5 with full detail | All 4 sub-skills (scan mode) |
-| `/review health <path>` | Codebase vitals dashboard | All sub-skills (scoring only) + `file_stats.py` |
+| `/probe audit <path>` | Full audit, sequential execution | All 4 sub-skills |
+| `/probe solid <path>` | SOLID principles only | `probe-solid` |
+| `/probe security <path>` | Security audit only | `probe-security` |
+| `/probe smells <path>` | Code smells only | `probe-code-smells` |
+| `/probe architecture <path>` | Architecture analysis only | `probe-architecture` |
+| `/probe quick <path>` | Top 5 issues — reads files, runs all sub-skills in scan mode (skip evidence/fix-prompt generation), ranks by severity, returns top 5 with full detail | All 4 sub-skills (scan mode) |
+| `/probe health <path>` | Codebase vitals dashboard | All sub-skills (scoring only) + `file_stats.py` |
 
 ### Stack Detection Logic
 
@@ -141,7 +141,7 @@ Weights: Security 20%, SOLID 15%, Architecture 15%, Error Handling 12%, Performa
 
 Phase 1 categories (4 of 9) are scored with their weights. Missing categories don't penalize — overall score is normalized to the active weights.
 
-### Config: `.review-config.json`
+### Config: `.probe-config.json`
 
 Read from project root if present. Optional — all defaults apply if absent.
 
@@ -153,7 +153,7 @@ Read from project root if present. Optional — all defaults apply if absent.
     "deep_nesting_max": 4,
     "max_constructor_deps": 6
   },
-  "skip_categories": ["review-testing"],
+  "skip_categories": ["probe-testing"],
   "skip_rules": ["SPEC-GEN-001"],
   "framework": "laravel",
   "extra_references": [],
@@ -196,7 +196,7 @@ Each SKILL.md contains:
 2. **Domain scope** — what this skill checks
 3. **What it does NOT flag** — false positive suppression
 4. **Detection instructions** — patterns/signals per sub-category, organized as tables
-5. **Reference loading** — conditional: "If codebase uses {framework}, Read `../review/references/{ref}.md`"
+5. **Reference loading** — conditional: "If codebase uses {framework}, Read `../probe/references/{ref}.md`"
 6. **Output contract** — JSON finding structure with all required fields
 7. **ID prefix** — unique per sub-skill
 
@@ -215,32 +215,32 @@ Every finding must include:
 | `fix_prompt` | Yes | Copy-pasteable prompt for Claude Code to apply the fix |
 | `refactored_sketch` | No | Optional minimal code showing fix direction |
 
-### Sub-Skill: `review-solid`
+### Sub-Skill: `probe-solid`
 
 - **ID prefix:** `SRP-`, `OCP-`, `LSP-`, `ISP-`, `DIP-`
 - **Checks:** Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
 - **Key signals:** Class with 5+ unrelated public methods, switch/if-else chains on type, subclass overrides changing semantics, interfaces with 8+ methods, `new ConcreteClass()` in business logic
 - **Does NOT flag:** Simple DTOs, small scripts, stable enum switches
 
-### Sub-Skill: `review-security`
+### Sub-Skill: `probe-security`
 
 - **ID prefix:** `SEC-`
 - **Checks:** OWASP Top 10 — Injection, Auth/AuthZ, XSS, Mass Assignment, CSRF, Insecure Deserialization, Sensitive Data Exposure, Broken Access Control, Misconfiguration
 - **Key signals:** Raw SQL with user input, missing auth middleware, `dangerouslySetInnerHTML`, `$request->all()`, secrets in code, IDOR patterns
 - **Does NOT flag:** Internal admin tools with IP restrictions, test file hardcoded values
 
-### Sub-Skill: `review-code-smells`
+### Sub-Skill: `probe-code-smells`
 
 - **ID prefix:** `SMELL-`
 - **Checks:** Long Method, Large Class, Feature Envy, Data Clumps, Primitive Obsession, Shotgun Surgery, Dead Code, Magic Numbers, Boolean Blindness, Deep Nesting, Inappropriate Intimacy, Speculative Generality, Middle Man, Refused Bequest, Temporal Coupling
 - **Thresholds (configurable):** Long Method > 30 LOC, Large Class > 300 LOC, Deep Nesting > 3 levels
 
-### Sub-Skill: `review-architecture`
+### Sub-Skill: `probe-architecture`
 
 - **ID prefix:** `ARCH-`
 - **Checks:** Layer Violations, Circular Dependencies, God Objects, Anemic Domain Model, Missing Boundaries, Directory Structure, Config/Environment
 - **Key signals:** Business logic in controllers, models with presentation logic, files > 500 LOC, classes with 20+ methods, cross-feature direct imports
-- **Uses:** `../review/scripts/file_stats.py` for LOC/complexity data when available
+- **Uses:** `../probe/scripts/file_stats.py` for LOC/complexity data when available
 
 ---
 
@@ -263,7 +263,7 @@ Each reference is a markdown file loaded on-demand when the orchestrator detects
 
 ### `full-audit-report.md`
 
-Template for `/review audit` output. Sections:
+Template for `/probe audit` output. Sections:
 - Project name, date, detected stack
 - Overall score (0-100)
 - Score breakdown table (per category)
@@ -277,10 +277,10 @@ Template for `/review audit` output. Sections:
 
 ### `quick-review-summary.md`
 
-Template for `/review quick` output. Sections:
+Template for `/probe quick` output. Sections:
 - Top 5 issues with severity, location, one-line problem, fix prompt
 - Overall impression (1-2 sentences)
-- "Run `/review audit` for full analysis"
+- "Run `/probe audit` for full analysis"
 
 ---
 
@@ -294,7 +294,7 @@ Template for `/review quick` output. Sections:
 - **Aggregate fields:** `{total_files, total_loc, avg_method_length, largest_file, test_file_count, test_file_ratio}`
 - **Read-only:** Only reads source files, never writes
 - **Dependencies:** Python 3.8+ standard library only (no pip deps for Phase 1)
-- **Used by:** `/review health` command for codebase vitals dashboard
+- **Used by:** `/probe health` command for codebase vitals dashboard
 
 ---
 
@@ -324,10 +324,10 @@ Template for `/review quick` output. Sections:
 ## Verification Plan
 
 1. **Install test:** Run `install.sh`, verify all skills appear in Claude Code's `/review` list
-2. **Quick review:** `/review quick <real-codebase-path>` — confirm top 5 findings with severity and fix prompts
-3. **Single sub-skill:** `/review security <path-with-known-issues>` — verify detection accuracy, finding format, fix prompt quality
-4. **Full audit:** `/review audit <small-project>` — all 4 sub-skills produce output, report renders with scores
-5. **Health dashboard:** `/review health <path>` — file_stats.py runs, dashboard renders with stats
-6. **Config overrides:** Create `.review-config.json` with `skip_categories` and threshold overrides, verify they apply
+2. **Quick review:** `/probe quick <real-codebase-path>` — confirm top 5 findings with severity and fix prompts
+3. **Single sub-skill:** `/probe security <path-with-known-issues>` — verify detection accuracy, finding format, fix prompt quality
+4. **Full audit:** `/probe audit <small-project>` — all 4 sub-skills produce output, report renders with scores
+5. **Health dashboard:** `/probe health <path>` — file_stats.py runs, dashboard renders with stats
+6. **Config overrides:** Create `.probe-config.json` with `skip_categories` and threshold overrides, verify they apply
 7. **Degraded mode:** Paste code in Claude.ai (no filesystem), confirm sub-skills work on in-context code
 8. **Edge cases:** Empty directory, single file, binary files, very large files (>1000 LOC)

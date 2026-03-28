@@ -34,27 +34,27 @@ metadata:
 Parse the user's input to extract a subcommand and target path. The input format is:
 
 ```
-/review [subcommand] [path]
+/probe [subcommand] [path]
 ```
 
 ### Routing Table
 
 | Command | Behavior | Sub-skills Invoked |
 |---------|----------|-------------------|
-| `/review audit <path>` | Full audit — run all available sub-skills sequentially, aggregate all findings | All available sub-skills |
-| `/review solid <path>` | SOLID principles analysis only | `review-solid` |
-| `/review security <path>` | Security audit only | `review-security` |
-| `/review smells <path>` | Code smells detection only | `review-code-smells` |
-| `/review architecture <path>` | Architecture analysis only | `review-architecture` |
-| `/review patterns <path>` | Design patterns analysis only | `review-patterns` |
-| `/review performance <path>` | Performance audit only | `review-performance` |
-| `/review errors <path>` | Error handling audit only | `review-error-handling` |
-| `/review tests <path>` | Test quality audit only | `review-testing` |
-| `/review framework <path>` | Framework best practices only | `review-framework` |
-| `/review quick <path>` | Top 5 issues — run all sub-skills in scan mode, then generate full detail for top 5 | All available |
-| `/review health <path>` | Codebase vitals dashboard — scores + stats, no individual findings | All available + `file_stats.py` |
-| `/review diff [branch]` | PR-style review on changed files vs branch (default: `main`) | All relevant (Phase 3) |
-| `/review report` | Generate report from last audit | `scripts/generate_report.py` (Phase 3) |
+| `/probe audit <path>` | Full audit — run all available sub-skills sequentially, aggregate all findings | All available sub-skills |
+| `/probe solid <path>` | SOLID principles analysis only | `probe-solid` |
+| `/probe security <path>` | Security audit only | `probe-security` |
+| `/probe smells <path>` | Code smells detection only | `probe-code-smells` |
+| `/probe architecture <path>` | Architecture analysis only | `probe-architecture` |
+| `/probe patterns <path>` | Design patterns analysis only | `probe-patterns` |
+| `/probe performance <path>` | Performance audit only | `probe-performance` |
+| `/probe errors <path>` | Error handling audit only | `probe-error-handling` |
+| `/probe tests <path>` | Test quality audit only | `probe-testing` |
+| `/probe framework <path>` | Framework best practices only | `probe-framework` |
+| `/probe quick <path>` | Top 5 issues — run all sub-skills in scan mode, then generate full detail for top 5 | All available |
+| `/probe health <path>` | Codebase vitals dashboard — scores + stats, no individual findings | All available + `file_stats.py` |
+| `/probe diff [branch]` | PR-style review on changed files vs branch (default: `main`) | All relevant (Phase 3) |
+| `/probe report` | Generate report from last audit | `scripts/generate_report.py` (Phase 3) |
 
 ### Default Behaviors
 
@@ -99,7 +99,7 @@ If a reference file does not exist, continue without it. Never fail the review b
 
 ## 3. Config Loading
 
-Check for a `.review-config.json` file in the project root (the target path or its ancestor directories).
+Check for a `.probe-config.json` file in the project root (the target path or its ancestor directories).
 
 ### Config Schema
 
@@ -111,7 +111,7 @@ Check for a `.review-config.json` file in the project root (the target path or i
     "deep_nesting_max": 4,
     "max_constructor_deps": 6
   },
-  "skip_categories": ["review-testing"],
+  "skip_categories": ["probe-testing"],
   "skip_rules": ["SPEC-GEN-001"],
   "framework": "laravel",
   "extra_references": [],
@@ -137,7 +137,7 @@ Check for a `.review-config.json` file in the project root (the target path or i
 
 For each sub-skill to run:
 
-1. **Invoke the sub-skill by name** (e.g., `review-solid`, `review-security`).
+1. **Invoke the sub-skill by name** (e.g., `probe-solid`, `probe-security`).
 2. **Pass the following context** to each sub-skill:
    - `target_path`: The path to review.
    - `detected_stack`: List of detected technology stacks.
@@ -150,27 +150,27 @@ For each sub-skill to run:
 
 | Mode | Used By | Behavior |
 |------|---------|----------|
-| `full` | `/review audit`, `/review solid`, etc. | Run complete analysis, return all findings |
-| `scan` | `/review quick` | Count violations, identify top issues, return only counts + top 5 candidates |
-| `score-only` | `/review health` | Return only category score, no individual findings |
+| `full` | `/probe audit`, `/probe solid`, etc. | Run complete analysis, return all findings |
+| `scan` | `/probe quick` | Count violations, identify top issues, return only counts + top 5 candidates |
+| `score-only` | `/probe health` | Return only category score, no individual findings |
 
 ### Execution Order
 
-- **`/review audit`**: Run sub-skills sequentially in this order: `review-security`, `review-error-handling`, `review-solid`, `review-architecture`, `review-patterns`, `review-performance`, `review-code-smells`, `review-testing`, `review-framework`. Collect all findings.
-- **`/review quick`**: Run all 9 sub-skills in `scan` mode. Collect candidate issues from all. Rank by severity (critical > major > minor > suggestion), then select top 5. Re-run relevant sub-skills in `full` mode for just those 5 findings to get complete detail.
-- **`/review health`**: Run all 9 sub-skills in `score-only` mode. Also run `file_stats.py` if Python 3 is available. Render the health dashboard.
+- **`/probe audit`**: Run sub-skills sequentially in this order: `probe-security`, `probe-error-handling`, `probe-solid`, `probe-architecture`, `probe-patterns`, `probe-performance`, `probe-code-smells`, `probe-testing`, `probe-framework`. Collect all findings.
+- **`/probe quick`**: Run all 9 sub-skills in `scan` mode. Collect candidate issues from all. Rank by severity (critical > major > minor > suggestion), then select top 5. Re-run relevant sub-skills in `full` mode for just those 5 findings to get complete detail.
+- **`/probe health`**: Run all 9 sub-skills in `score-only` mode. Also run `file_stats.py` if Python 3 is available. Render the health dashboard.
 
 ### Available Sub-Skills
 
-1. `review-security` — Security vulnerability detection
-2. `review-error-handling` — Error handling & resilience
-3. `review-solid` — SOLID principles analysis
-4. `review-architecture` — Architecture analysis
-5. `review-patterns` — Design patterns advisor
-6. `review-performance` — Performance & scalability
-7. `review-code-smells` — Code smell detection
-8. `review-testing` — Test quality & coverage
-9. `review-framework` — Framework-specific best practices
+1. `probe-security` — Security vulnerability detection
+2. `probe-error-handling` — Error handling & resilience
+3. `probe-solid` — SOLID principles analysis
+4. `probe-architecture` — Architecture analysis
+5. `probe-patterns` — Design patterns advisor
+6. `probe-performance` — Performance & scalability
+7. `probe-code-smells` — Code smell detection
+8. `probe-testing` — Test quality & coverage
+9. `probe-framework` — Framework-specific best practices
 
 ---
 
@@ -254,7 +254,7 @@ All 9 categories are active. Weights sum to 100%.
 overall = sum(category_score_i * weight_i for each active category)
 ```
 
-If `skip_categories` in `.review-config.json` excludes some categories, normalize by dividing by the sum of active weights:
+If `skip_categories` in `.probe-config.json` excludes some categories, normalize by dividing by the sum of active weights:
 
 ```
 overall = sum(category_score_i * weight_i for each active category) / sum(weight_i for each active category)
@@ -276,7 +276,7 @@ Clamp the result to the range [0, 100].
 
 Render the final output based on the command used.
 
-### `/review audit` — Full Audit Report
+### `/probe audit` — Full Audit Report
 
 Use the template at `templates/full-audit-report.md` (loaded via Read). If the template does not exist yet, render the report inline with this structure:
 
@@ -286,16 +286,16 @@ Use the template at `templates/full-audit-report.md` (loaded via Read). If the t
 4. **Score Card**: Table of category scores with bar visualization.
 5. **Recommended Fix Order**: List the top findings to address first, ordered by impact.
 
-### `/review quick` — Quick Review Summary
+### `/probe quick` — Quick Review Summary
 
 Use the template at `templates/quick-review-summary.md` (loaded via Read). If the template does not exist yet, render inline:
 
 1. **Header**: Project name, "Quick Review — Top 5 Issues".
 2. **Top 5 Findings**: Full detail for the 5 most impactful issues, each with fix prompt.
 3. **Summary Counts**: Total issues found by severity across all categories.
-4. **Next Step**: Suggest running `/review audit` for the complete picture.
+4. **Next Step**: Suggest running `/probe audit` for the complete picture.
 
-### `/review health` — Health Dashboard
+### `/probe health` — Health Dashboard
 
 Render the dashboard inline in this format:
 
@@ -327,7 +327,7 @@ Hot Spots (files needing most attention):
   2. {file} — {n} categories flagged
   3. {file} — {n} categories flagged
 
-Run `/review audit` for detailed findings and fix prompts.
+Run `/probe audit` for detailed findings and fix prompts.
 ```
 
 The bar is a visual indicator using block characters, proportional to the score (e.g., 10 characters wide).
@@ -348,7 +348,7 @@ Detect whether filesystem access is available. If the user has pasted or uploade
 1. **Switch to degraded mode**: Analyze only the in-context code provided.
 2. **Execute sub-skills sequentially** on the pasted code (no parallel agents).
 3. **Skip** `file_stats.py` and all script-dependent steps.
-4. **Skip** `/review diff`, `/review health` stats section, and `/review report`.
+4. **Skip** `/probe diff`, `/probe health` stats section, and `/probe report`.
 5. **Inform the user**: "Running in Claude.ai mode — some features like codebase statistics, diff review, and multi-file analysis are unavailable. Analyzing the provided code directly."
 6. Still produce findings in the standard output contract format.
 7. Still compute scores based on findings from available sub-skills.
@@ -361,18 +361,18 @@ When the user invokes a command that routes to an unbuilt feature, respond with:
 
 > **Not yet available.** This feature is coming in Phase 3. Currently available commands:
 >
-> - `/review audit <path>` — Full code audit
-> - `/review solid <path>` — SOLID principles check
-> - `/review security <path>` — Security audit
-> - `/review smells <path>` — Code smells detection
-> - `/review architecture <path>` — Architecture analysis
-> - `/review patterns <path>` — Design patterns analysis
-> - `/review performance <path>` — Performance audit
-> - `/review errors <path>` — Error handling audit
-> - `/review tests <path>` — Test quality audit
-> - `/review framework <path>` — Framework best practices
-> - `/review quick <path>` — Top 5 issues
-> - `/review health <path>` — Codebase vitals dashboard
+> - `/probe audit <path>` — Full code audit
+> - `/probe solid <path>` — SOLID principles check
+> - `/probe security <path>` — Security audit
+> - `/probe smells <path>` — Code smells detection
+> - `/probe architecture <path>` — Architecture analysis
+> - `/probe patterns <path>` — Design patterns analysis
+> - `/probe performance <path>` — Performance audit
+> - `/probe errors <path>` — Error handling audit
+> - `/probe tests <path>` — Test quality audit
+> - `/probe framework <path>` — Framework best practices
+> - `/probe quick <path>` — Top 5 issues
+> - `/probe health <path>` — Codebase vitals dashboard
 
 This applies to: `diff`, `report`.
 
@@ -385,7 +385,7 @@ When `/review` is invoked, execute this sequence:
 1. **Parse command**: Extract subcommand and target path from user input.
 2. **Validate command**: Check routing table. If Phase 3 stub, respond with stub message.
 3. **Resolve target path**: Use provided path or default to current working directory.
-4. **Load config**: Check for `.review-config.json` at project root. Apply defaults if absent.
+4. **Load config**: Check for `.probe-config.json` at project root. Apply defaults if absent.
 5. **Auto-detect stack**: Scan target path for technology signals. Load matching references.
 6. **Apply config overrides**: If `framework` is set in config, adjust detection. Apply `skip_categories` and `skip_rules`.
 7. **Execute sub-skills**: Route to appropriate sub-skills based on command and mode.

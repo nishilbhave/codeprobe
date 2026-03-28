@@ -1,5 +1,5 @@
 ---
-name: review-patterns
+name: probe-patterns
 description: >
   Audits code for design pattern opportunities and anti-patterns — identifies places
   where a specific GoF or architectural pattern would solve an observable problem, and
@@ -33,15 +33,15 @@ This sub-skill detects two categories of design pattern issues:
 
 ## What It Does NOT Flag
 
-- **Switch statements on type/status are already flagged by `review-solid` (OCP-xxx).**
-  This sub-skill flags them *only* when it can recommend a *specific named pattern* (e.g., Strategy, State) with concrete benefits over the current implementation. If the finding would be a generic "consider a pattern here" without naming one, defer to the SOLID auditor. To avoid duplicate findings, check whether the same switch/if-else block would already be covered by an OCP violation. If `review-solid` would flag it and your recommendation is simply "use polymorphism," do not emit a finding.
-  **Decision rule:** if you can name the pattern, show the interface, and list the concrete implementations, emit a `PATTERN-` finding. If you can only say "this violates OCP," let `review-solid` handle it.
+- **Switch statements on type/status are already flagged by `probe-solid` (OCP-xxx).**
+  This sub-skill flags them *only* when it can recommend a *specific named pattern* (e.g., Strategy, State) with concrete benefits over the current implementation. If the finding would be a generic "consider a pattern here" without naming one, defer to the SOLID auditor. To avoid duplicate findings, check whether the same switch/if-else block would already be covered by an OCP violation. If `probe-solid` would flag it and your recommendation is simply "use polymorphism," do not emit a finding.
+  **Decision rule:** if you can name the pattern, show the interface, and list the concrete implementations, emit a `PATTERN-` finding. If you can only say "this violates OCP," let `probe-solid` handle it.
 
-- **God classes are already flagged by `review-architecture` (ARCH-xxx).**
+- **God classes are already flagged by `probe-architecture` (ARCH-xxx).**
   This sub-skill only flags them when a *specific pattern* (e.g., Facade, Mediator) would be the recommended decomposition approach. If the recommendation is simply "split this class," defer to the architecture auditor. Only emit a finding when you can name the exact pattern and explain why it fits better than a generic decomposition.
-  **Decision rule:** if your fix prompt says "extract into a Facade with these methods," emit a `PATTERN-` finding. If it says "break this into smaller classes," let `review-architecture` handle it.
+  **Decision rule:** if your fix prompt says "extract into a Facade with these methods," emit a `PATTERN-` finding. If it says "break this into smaller classes," let `probe-architecture` handle it.
 
-- **Cross-cutting concerns flagged by `review-code-smells` (SMELL-xxx).**
+- **Cross-cutting concerns flagged by `probe-code-smells` (SMELL-xxx).**
   Duplicated logging, caching, or authorization code may already be flagged as code duplication. Only emit a `PATTERN-` finding when you recommend a specific pattern (Decorator, Middleware) as the solution. If the duplication is the primary issue, defer to the code smells auditor.
 
 - **Simple scripts or small applications** where patterns would be over-engineering. A 50-line CLI script does not need a Strategy pattern. A single-file utility does not need a Factory. Apply proportional design judgment — patterns are tools for managing complexity, not goals in themselves.
@@ -66,7 +66,7 @@ This sub-skill detects two categories of design pattern issues:
 | Object behavior changes based on internal state field | State | A class with methods containing if/switch on `$this->status` or `this.state` where the same field controls behavior in 3+ methods. State transitions are scattered across the class. | Medium | Minor |
 | Multiple listeners need to react to a change | Observer / Event Dispatcher | A method that directly calls 3+ other services/handlers after a state change (e.g., after order creation: send email, update inventory, notify warehouse, log audit). Should be events. | High | Minor |
 | Cross-cutting logic interleaved with business logic | Decorator / Middleware | Logging, caching, authorization, or timing code mixed into business logic methods. Same cross-cutting concern copy-pasted across 3+ methods. | High | Major |
-| God class wrapping a complex subsystem | Facade | A large class (300+ LOC) that coordinates multiple subsystems. Clients only need a simplified interface. Only flag when review-architecture hasn't already flagged as a god object. | Medium | Minor |
+| God class wrapping a complex subsystem | Facade | A large class (300+ LOC) that coordinates multiple subsystems. Clients only need a simplified interface. Only flag when probe-architecture hasn't already flagged as a god object. | Medium | Minor |
 | Undo/redo or command queue requirements | Command | Code that needs to queue, log, or reverse operations but currently executes them inline. | Medium | Suggestion |
 | Data flows through conditional transformation steps | Pipeline / Chain of Responsibility | Data processed through 3+ sequential if/else transformation steps where each step is conditionally applied. Could be a pipeline of composable stages. | Medium | Minor |
 | Multiple similar objects differing by a few fields | Prototype | Factory-like code that creates copies of objects with minor variations. | Low | Suggestion |
@@ -84,7 +84,7 @@ This sub-skill detects two categories of design pattern issues:
 
 ## Reference Loading
 
-All language references are relevant since patterns are language-agnostic, but implementations differ. If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read:
+All language references are relevant since patterns are language-agnostic, but implementations differ. If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read:
 
 - `php-laravel.md` for Laravel-specific patterns (Service Container, Repositories, Events)
 - `javascript-typescript.md` for JS patterns (module patterns, async patterns)
@@ -169,7 +169,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-patterns",
+  "skill": "probe-patterns",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

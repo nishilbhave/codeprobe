@@ -1,5 +1,5 @@
 ---
-name: review-architecture
+name: probe-architecture
 description: >
   Analyzes code architecture and structure — layer violations, circular dependencies,
   god objects, anemic domain models, missing boundaries, directory structure issues,
@@ -107,7 +107,7 @@ When available, run the file_stats.py script via Bash to get LOC, class count, a
 python3 scripts/file_stats.py <target_path>
 ```
 
-Note: The orchestrator typically runs this script and passes results. If invoked standalone, locate the script in the sibling `review/scripts/` directory.
+Note: The orchestrator typically runs this script and passes results. If invoked standalone, locate the script in the sibling `probe/scripts/` directory.
 
 Use this data to:
 - Identify god objects (files > 500 LOC, classes with 20+ methods)
@@ -120,7 +120,7 @@ If Python 3 or the `file_stats.py` script is unavailable, estimate from reading 
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHP/Laravel projects (directory conventions, service layer patterns)
 - `javascript-typescript.md` for JS/TS projects (module patterns, barrel files)
@@ -204,7 +204,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-architecture",
+  "skill": "probe-architecture",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```

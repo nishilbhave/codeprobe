@@ -188,14 +188,14 @@
 
   <!-- Commands list (right side) -->
   <g font-family="'SF Mono', 'Fira Code', 'Cascadia Code', Menlo, monospace" font-size="14" fill="#fdba74" text-anchor="end">
-    <text x="860" y="72">/review audit &lt;path&gt;</text>
-    <text x="860" y="96">/review security &lt;path&gt;</text>
-    <text x="860" y="120">/review solid &lt;path&gt;</text>
-    <text x="860" y="144">/review architecture &lt;path&gt;</text>
-    <text x="860" y="168">/review performance &lt;path&gt;</text>
-    <text x="860" y="192">/review tests &lt;path&gt;</text>
-    <text x="860" y="216">/review health &lt;path&gt;</text>
-    <text x="860" y="240">/review quick &lt;path&gt;</text>
+    <text x="860" y="72">/probe audit &lt;path&gt;</text>
+    <text x="860" y="96">/probe security &lt;path&gt;</text>
+    <text x="860" y="120">/probe solid &lt;path&gt;</text>
+    <text x="860" y="144">/probe architecture &lt;path&gt;</text>
+    <text x="860" y="168">/probe performance &lt;path&gt;</text>
+    <text x="860" y="192">/probe tests &lt;path&gt;</text>
+    <text x="860" y="216">/probe health &lt;path&gt;</text>
+    <text x="860" y="240">/probe quick &lt;path&gt;</text>
   </g>
 
   <!-- Stats bar -->

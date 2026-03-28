@@ -1,5 +1,5 @@
 ---
-name: review-error-handling
+name: probe-error-handling
 description: >
   Scans code for error handling and resilience issues — swallowed exceptions, missing
   try/catch on external calls, unhandled promise rejections, missing transactions,
@@ -37,7 +37,7 @@ This sub-skill detects error handling and resilience issues across these categor
 
 ## What It Does NOT Flag
 
-- **Sensitive data in logs** — covered by `review-security` (`SEC` prefix). This sub-skill flags *missing* logging and *structural* issues like no correlation IDs, not data leakage.
+- **Sensitive data in logs** — covered by `probe-security` (`SEC` prefix). This sub-skill flags *missing* logging and *structural* issues like no correlation IDs, not data leakage.
 - **Test files** — test exception handling follows different patterns and is expected to be simpler.
 - **Framework-generated exception handlers** (e.g., Laravel's `Handler.php`, Next.js error boundaries that are intentionally minimal) — these are scaffolded defaults, not developer oversights.
 - **CLI scripts with intentionally simple error handling** (print + exit) — command-line tools often use a valid pattern of printing an error and exiting with a non-zero code.
@@ -105,7 +105,7 @@ This sub-skill detects error handling and resilience issues across these categor
 
 ## Reference Loading
 
-If the project uses a specific framework or language, load the relevant reference file from `../review/references/{file}.md` using Read. Available references include:
+If the project uses a specific framework or language, load the relevant reference file from `../probe/references/{file}.md` using Read. Available references include:
 
 - `php-laravel.md` for PHP/Laravel projects (DB::transaction, queue retry patterns)
 - `javascript-typescript.md` for JS/TS projects (async/await error handling, Promise patterns)
@@ -187,7 +187,7 @@ At the end of every execution (regardless of mode), provide a summary:
 
 ```json
 {
-  "skill": "review-error-handling",
+  "skill": "probe-error-handling",
   "summary": { "critical": 0, "major": 0, "minor": 0, "suggestion": 0 }
 }
 ```
