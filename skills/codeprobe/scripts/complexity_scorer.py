@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-complexity_scorer.py — Cyclomatic complexity analysis for code-review-claude.
+complexity_scorer.py — Cyclomatic complexity analysis for codeprobe-claude.
 
 Calculates cyclomatic complexity per function/method across a codebase
 and outputs JSON to stdout.

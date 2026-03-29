@@ -4,7 +4,7 @@
 
 Automated linters catch syntax issues but miss architectural rot — SOLID violations, security anti-patterns, performance traps, and framework misuse. This skill system brings senior-engineer-level code review to Claude Code as a team of specialized sub-skills orchestrated by a central router.
 
-This design covers **Phase 1 (MVP)** of the `code-review-claude` skill system: the orchestrator, 4 sub-skills, 6 reference files, 1 script, 2 templates, and install/uninstall scripts.
+This design covers **Phase 1 (MVP)** of the `codeprobe-claude` skill system: the orchestrator, 4 sub-skills, 6 reference files, 1 script, 2 templates, and install/uninstall scripts.
 
 **Key decisions made:**
 - Replaces the existing `code-review:code-review` plugin entirely
@@ -18,7 +18,7 @@ This design covers **Phase 1 (MVP)** of the `code-review-claude` skill system: t
 ## Repo Structure
 
 ```
-code-review-claude/
+codeprobe-claude/
 ├── skills/
 │   ├── review/                        # Orchestrator (user-invokable)
 │   │   ├── SKILL.md

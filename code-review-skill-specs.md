@@ -1,10 +1,10 @@
 # Code Review & Audit Skill System — Specification Document
-## `code-review-claude`
+## `codeprobe-claude`
 
 **Version:** 0.6 (Name Finalized)
 **Author:** Nishil + Claude
 **Date:** 2026-03-28
-**Repo:** `github.com/nishil-patel/code-review-claude` *(placeholder — update with actual GitHub username)*
+**Repo:** `github.com/nishil-patel/codeprobe-claude` *(placeholder — update with actual GitHub username)*
 **Status:** Ready to Build — Phase 1
 
 ---
@@ -36,7 +36,7 @@ This constraint applies even if the user asks the skill to "fix it" — the skil
 Follows the multi-skill orchestrator pattern (ref: `geo-seo-claude`).
 
 ```
-code-review-claude/
+codeprobe-claude/
 ├── review/                           # Main orchestrator skill
 │   └── SKILL.md                      # Primary skill — command routing & synthesis
 │
@@ -722,8 +722,8 @@ User: uploads 3 files
 ## Next Steps
 
 1. ✅ Spec reviewed — all open questions resolved
-2. ✅ Name finalized — `code-review-claude`
-3. Create GitHub repo `code-review-claude`
+2. ✅ Name finalized — `codeprobe-claude`
+3. Create GitHub repo `codeprobe-claude`
 4. Build orchestrator (`codeprobe/SKILL.md`) with Claude.ai detection
 5. Build first 4 sub-skills (solid, security, code-smells, architecture)
 6. Write all 6 reference files

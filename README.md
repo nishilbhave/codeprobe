@@ -13,14 +13,14 @@ Reads your codebase, generates severity-scored findings across 9 categories -- s
 ### One-Command Install (macOS/Linux)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nishilbhave/code-review-claude/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nishilbhave/codeprobe-claude/main/install.sh | bash
 ```
 
 ### Manual Install
 
 ```bash
-git clone https://github.com/nishilbhave/code-review-claude.git
-cd code-review-claude
+git clone https://github.com/nishilbhave/codeprobe-claude.git
+cd codeprobe-claude
 ./install.sh
 ```
 
@@ -30,11 +30,11 @@ Requires [Git for Windows](https://gitforwindows.org/) which includes Git Bash.
 
 ```bash
 # Option 1: One-command install (run from Git Bash, not PowerShell/CMD)
-curl -fsSL https://raw.githubusercontent.com/nishilbhave/code-review-claude/main/install-win.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nishilbhave/codeprobe-claude/main/install-win.sh | bash
 
 # Option 2: Manual install
-git clone https://github.com/nishilbhave/code-review-claude.git
-cd code-review-claude
+git clone https://github.com/nishilbhave/codeprobe-claude.git
+cd codeprobe-claude
 ./install-win.sh
 ```
 

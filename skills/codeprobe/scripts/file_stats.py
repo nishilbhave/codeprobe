@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-file_stats.py — Codebase statistics for code-review-claude.
+file_stats.py — Codebase statistics for codeprobe-claude.
 
 Analyzes source files in a directory and outputs JSON to stdout.
 Read-only: only reads files, never writes anything.

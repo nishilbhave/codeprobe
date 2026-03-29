@@ -12,13 +12,13 @@ else
     # Running via curl | bash -- clone to temp dir
     FROM_CURL=true
     TMPDIR=$(mktemp -d)
-    echo "Cloning code-review-claude..."
-    git clone --quiet https://github.com/nishilbhave/code-review-claude.git "$TMPDIR/code-review-claude"
-    SCRIPT_DIR="$TMPDIR/code-review-claude"
+    echo "Cloning codeprobe-claude..."
+    git clone --quiet https://github.com/nishilbhave/codeprobe-claude.git "$TMPDIR/codeprobe-claude"
+    SCRIPT_DIR="$TMPDIR/codeprobe-claude"
     trap "rm -rf '$TMPDIR'" EXIT
 fi
 
-echo "Installing code-review-claude..."
+echo "Installing codeprobe-claude..."
 
 # Create skills directory if needed
 mkdir -p "$SKILLS_DIR"

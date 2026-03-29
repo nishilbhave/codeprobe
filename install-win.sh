@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_DIR="$HOME/.claude/skills"
 
-echo "Installing code-review-claude (Windows)..."
+echo "Installing codeprobe-claude (Windows)..."
 
 # Create skills directory if needed
 mkdir -p "$SKILLS_DIR"
