@@ -4,9 +4,69 @@
   <img src="assets/banner.svg" alt="CodeProbe - Senior-Engineer Code Review for Claude Code" width="900"/>
 </p>
 
-Senior-Engineer Code Review for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/install-one--command-f97316?style=flat-square" alt="Install"/></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"/>
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=flat-square" alt="Platform"/>
+  <img src="https://img.shields.io/badge/Claude%20Code-skill-7c3aed?style=flat-square" alt="Claude Code Skill"/>
+</p>
 
-Reads your codebase, generates severity-scored findings across 9 categories -- security, SOLID principles, architecture, error handling, performance, test quality, code smells, design patterns, and framework best practices -- each with a copy-pasteable fix prompt you can run directly in Claude Code. **Strictly read-only: never modifies your code.**
+Senior-engineer code review for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Run `/codeprobe audit .` and get a full health report in seconds.
+
+- **9 review categories** -- security, SOLID, architecture, error handling, performance, test quality, code smells, design patterns, framework best practices
+- **Severity-scored findings** with file locations and copy-pasteable fix prompts
+- **Auto-detects your stack** -- Python, TypeScript, React/Next.js, PHP/Laravel, SQL, and more
+- **Strictly read-only** -- never modifies your code
+
+---
+
+## Sample Output
+
+### `/codeprobe health`
+
+```
+Code Health Report — Growth Engine
+
+Overall Health: 55/100 🟡 Needs Attention
+
+Category Scores:
+    Architecture       █████████████████░░░  91/100  ✅ Healthy
+    Security           ████████████░░░░░░░░  62/100  🟡 Needs Attention
+    Framework          ████████████░░░░░░░░  60/100  🟡 Needs Attention
+    Performance        ███████████░░░░░░░░░  58/100  🔴 Critical
+    SOLID              ███████████░░░░░░░░░  55/100  🔴 Critical
+    Design Patterns    ███████████░░░░░░░░░  55/100  🔴 Critical
+    Code Smells        █████████░░░░░░░░░░░  46/100  🔴 Critical
+    Test Quality       █████░░░░░░░░░░░░░░░  28/100  🔴 Critical
+    Error Handling     ████░░░░░░░░░░░░░░░░  22/100  🔴 Critical
+
+Codebase Stats:
+    Files: 391        | Total LOC: 64,146
+    Backend: 170 py (20,907 LOC)   | Frontend: 221 ts/tsx (43,239 LOC)
+    Largest file: frontend/app/growth-engine/ads/page.tsx (1,979 LOC)
+    Test files: 29 / 391 (7.4%)
+    Comment ratio: 1.1%
+
+Hot Spots (files needing most attention):
+    1. frontend/app/growth-engine/ads/page.tsx  — 3 categories flagged (SOLID, Code Smells, Architecture)
+    2. backend/app/routers/agents.py            — 3 categories flagged (SOLID, Architecture, Design Patterns)
+    3. backend/app/services/dependency_resolver.py — 3 categories flagged (Error Handling, Performance, Patterns)
+```
+
+### `/codeprobe audit`
+
+Each finding includes an ID, severity, file location, evidence, and a fix prompt you can run directly in Claude Code:
+
+```
+SEC-003 | Critical | src/auth/login.php:22-35
+
+  Problem:  SQL query built with string concatenation using unsanitized user input.
+  Evidence: Line 25: $query = "SELECT * FROM users WHERE email = '" . $_POST['email'] . "'";
+  Fix:      Refactor src/auth/login.php lines 22-35 to use PDO prepared statements
+            instead of string concatenation for the SQL query.
+```
+
+---
 
 ## Quick Start
 
@@ -51,26 +111,28 @@ Then in any project:
 /codeprobe audit .
 ```
 
-## Available Commands
+---
 
-| Command | Description | Status |
-|---------|-------------|--------|
-| `/codeprobe audit <path>` | Full audit -- all 9 categories, detailed findings, refactoring roadmap | Available |
-| `/codeprobe solid <path>` | SOLID principles analysis | Available |
-| `/codeprobe security <path>` | Security vulnerability detection | Available |
-| `/codeprobe smells <path>` | Code smell detection | Available |
-| `/codeprobe architecture <path>` | Architecture and dependency analysis | Available |
-| `/codeprobe patterns <path>` | Design patterns analysis | Available |
-| `/codeprobe performance <path>` | Performance audit | Available |
-| `/codeprobe errors <path>` | Error handling audit | Available |
-| `/codeprobe tests <path>` | Test quality audit | Available |
-| `/codeprobe framework <path>` | Framework best practices | Available |
-| `/codeprobe quick <path>` | Top 5 most impactful issues with fix prompts | Available |
-| `/codeprobe health <path>` | Codebase vitals dashboard -- scores + file statistics | Available |
-| `/codeprobe diff [branch]` | PR-style review of changed files | Phase 3 |
-| `/codeprobe report` | Generate report from last audit | Phase 3 |
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/codeprobe audit <path>` | Full audit -- all 9 categories, detailed findings, refactoring roadmap |
+| `/codeprobe health <path>` | Codebase vitals dashboard -- scores, file statistics, hot spots |
+| `/codeprobe quick <path>` | Top 5 most impactful issues with fix prompts |
+| `/codeprobe security <path>` | Security vulnerability detection |
+| `/codeprobe solid <path>` | SOLID principles analysis |
+| `/codeprobe architecture <path>` | Architecture and dependency analysis |
+| `/codeprobe performance <path>` | Performance audit |
+| `/codeprobe errors <path>` | Error handling audit |
+| `/codeprobe tests <path>` | Test quality audit |
+| `/codeprobe smells <path>` | Code smell detection |
+| `/codeprobe patterns <path>` | Design patterns analysis |
+| `/codeprobe framework <path>` | Framework best practices |
 
 If no path is given, the current working directory is used.
+
+---
 
 ## How It Works
 
@@ -96,48 +158,7 @@ The system uses an **orchestrator + sub-skill** architecture:
 
 Stack detection is automatic. The orchestrator scans for file extensions and project markers (e.g., `next.config.*`, `migrations/` directory) and loads the appropriate reference guides.
 
-## Output Format
-
-Every finding follows a consistent format:
-
-```
-### SEC-003 | Critical | `src/auth/login.php:22-35`
-
-**Problem:** SQL query built with string concatenation using unsanitized user input.
-
-**Evidence:**
-> Line 25: `$query = "SELECT * FROM users WHERE email = '" . $_POST['email'] . "'";`
-
-**Suggestion:** Use parameterized queries via PDO prepared statements.
-
-**Fix prompt:**
-> Refactor `src/auth/login.php` lines 22-35 to use PDO prepared statements
-> instead of string concatenation for the SQL query.
-```
-
-Each finding includes: ID, severity, file location, problem description, evidence from the code, suggestion, and a fix prompt you can paste directly into Claude Code.
-
-## Configuration
-
-Create a `.codeprobe-config.json` in your project root to customize behavior:
-
-```json
-{
-  "severity_overrides": {
-    "long_method_loc": 50,
-    "large_class_loc": 500,
-    "deep_nesting_max": 4,
-    "max_constructor_deps": 6
-  },
-  "skip_categories": ["codeprobe-testing"],
-  "skip_rules": ["SPEC-GEN-001"],
-  "framework": "laravel",
-  "extra_references": [],
-  "report_format": "markdown"
-}
-```
-
-All fields are optional. If the file is absent, defaults apply.
+---
 
 ## Scoring
 
@@ -165,13 +186,37 @@ Suggestions do not affect scores. The overall score is a weighted average of act
 | Design Patterns | 4% |
 | Framework | 4% |
 
-All 9 categories are active. If `skip_categories` is set in config, weights are normalized to 100%.
-
 | Score Range | Status |
 |-------------|--------|
 | 80-100 | Healthy |
 | 60-79 | Needs Attention |
 | 0-59 | Critical |
+
+---
+
+## Configuration
+
+Create a `.codeprobe-config.json` in your project root to customize behavior:
+
+```json
+{
+  "severity_overrides": {
+    "long_method_loc": 50,
+    "large_class_loc": 500,
+    "deep_nesting_max": 4,
+    "max_constructor_deps": 6
+  },
+  "skip_categories": ["codeprobe-testing"],
+  "skip_rules": ["SPEC-GEN-001"],
+  "framework": "laravel",
+  "extra_references": [],
+  "report_format": "markdown"
+}
+```
+
+All fields are optional. If the file is absent, defaults apply. If `skip_categories` is set, weights are normalized to 100%.
+
+---
 
 ## Stack Support
 
@@ -186,17 +231,11 @@ Auto-detected languages and frameworks with dedicated reference guides:
 
 Additional languages recognized for file statistics: Java, Ruby, Go, Rust, Vue, Svelte, Shell, CSS/SCSS, HTML.
 
+---
+
 ## Claude.ai Support
 
 When used on Claude.ai (without filesystem access), the skill runs in **degraded mode**: it analyzes pasted or uploaded code directly, skips codebase statistics and diff review, and notes the limitation. Findings and scoring still work normally.
-
-## Phase Roadmap
-
-**Phase 1 (complete):** Core review engine with 4 sub-skills (security, SOLID, architecture, code smells), orchestrator routing, scoring, templates, and file statistics.
-
-**Phase 2 (current):** 5 additional sub-skills (error handling, performance, test quality, design patterns, framework best practices), 3 additional scripts (complexity scorer, dependency mapper, report generator), and PR review template.
-
-**Phase 3:** Parallel agent execution, PDF report generation, CI integration, and diff-based reviews.
 
 ## License
 
