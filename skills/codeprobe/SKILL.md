@@ -358,29 +358,38 @@ Render the final output based on the command used.
 
 ### `/codeprobe audit` — Full Audit Report
 
-Use the template at `templates/full-audit-report.md` (loaded via Read). The template opens with a **visual health dashboard** (category scores, codebase stats, hot spots) and then uses a **tiered output format** for findings to control token usage. Render order:
+Use the template at `templates/full-audit-report.md` (loaded via Read). The template opens with a **visual health dashboard** (category scores, codebase stats, hot spots) and then uses a **tiered output format** for findings to control token usage.
 
-1. **Dashboard header**: `Code Health Report — {project}` title line and `Overall Health: {score}/100 [{status_label}]` where `{status_label}` is derived from the thresholds in the "Status thresholds" block below. Do not use emoji; wrap the status label in square brackets (e.g., `[Healthy]`, `[Needs Attention]`, `[Critical]`).
-2. **Category score bars**: a 10-character block-character bar proportional to the score for each of the 9 categories (Architecture, Security, Framework, Performance, SOLID, Design Patterns, Code Smells, Test Quality, Error Handling), followed by `{score}/100 [{status_label}]`. No emoji.
-3. **Codebase Stats**: output of `scripts/file_stats.py` (total files, LOC, backend/frontend split, largest file, test file ratio, comment ratio). If Python 3 is unavailable, omit this block and note: "Install Python 3 for codebase statistics."
-4. **Hot Spots**: top 3 files by distinct-categories-flagged (computed from the same findings that feed the scores).
-5. Horizontal rule.
-6. **Executive Summary**: 2-3 sentences covering the most important findings.
-7. **Critical findings — Full detail**: Each critical finding rendered with evidence, suggestion, and fix prompt. These are the most important and justify the token cost.
-8. **Major findings — Summary table**: One row per major finding with ID, file, problem, and fix prompt. No evidence block (saves ~200 tokens per finding).
-9. **Minor findings — Counts only**: Aggregated count per category. No individual findings listed.
-10. **Suggestions — Counts only**: Aggregated count per category. No individual findings listed.
-11. **Prioritized Fix Order**: Ordered list of all critical and major fix prompts, ranked by impact.
-12. **Save report to file**: ensure `./codeprobe-reports/` exists in the current working directory (create via Bash `mkdir -p ./codeprobe-reports` if missing). Write the full rendered markdown from steps 1-11 to `./codeprobe-reports/{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool. Use the same markdown that was rendered to the terminal — do NOT re-render. After writing, emit a final terminal line: `--> Report saved to ./codeprobe-reports/{filename}` (no emoji; use the ASCII arrow). If the write fails (read-only filesystem, permission denied, etc.), surface the error as a short inline note but do not block or re-emit the terminal output.
+**Two-surface dashboard output:** The dashboard is rendered twice from the same underlying data — once as colored ANSI for the user's terminal (via `scripts/render_dashboard.py`, palette matches `assets/sample-output.svg`), and once as plain markdown for the saved report file (via the template). This gives the user a colored visual in the terminal while keeping the on-disk report diff-friendly. When Python 3 is unavailable, skip the ANSI renderer and stream the markdown dashboard to the terminal as the fallback (the legacy behavior).
 
-If the template does not exist, render inline following the same structure. Step 12 (save) still applies regardless.
+Render order:
+
+1. **Terminal dashboard (colored, ANSI)**: if Python 3 is available, assemble a JSON payload with the shape documented at the top of `scripts/render_dashboard.py` (keys: `project_name`, `overall_score`, `categories`, `stats`, `hot_spots`, `command_label`) using the aggregated score data. Invoke the script via the Bash tool by piping the JSON on stdin:
+   ```
+   printf '%s' '<json>' | python3 skills/codeprobe/scripts/render_dashboard.py
+   ```
+   The script auto-detects truecolor/no-color, respects `NO_COLOR=1`, and falls back to plain-text Unicode bars when not connected to a TTY. Its stdout prints to the user's terminal directly, so ANSI colors are honored by the terminal emulator. When this step runs successfully, do NOT also stream the markdown dashboard (built in steps 2-5) to the terminal — it would duplicate the dashboard. If Python 3 is unavailable or the Bash call errors, skip this step; the markdown dashboard from steps 2-5 will be streamed to the terminal instead as the fallback.
+2. **Dashboard header (markdown)**: `Code Health Report — {project}` title line and `Overall Health: {score}/100 [{status_label}]` where `{status_label}` is derived from the thresholds in the "Status thresholds" block below. Do not use emoji; wrap the status label in square brackets (e.g., `[Healthy]`, `[Needs Attention]`, `[Critical]`).
+3. **Category score bars (markdown)**: a 10-character block-character bar proportional to the score for each of the 9 categories (Architecture, Security, Framework, Performance, SOLID, Design Patterns, Code Smells, Test Quality, Error Handling), followed by `{score}/100 [{status_label}]`. No emoji.
+4. **Codebase Stats (markdown)**: output of `scripts/file_stats.py` (total files, LOC, backend/frontend split, largest file, test file ratio, comment ratio). If Python 3 is unavailable, omit this block and note: "Install Python 3 for codebase statistics."
+5. **Hot Spots (markdown)**: top 3 files by distinct-categories-flagged (computed from the same findings that feed the scores).
+6. Horizontal rule.
+7. **Executive Summary**: 2-3 sentences covering the most important findings.
+8. **Critical findings — Full detail**: Each critical finding rendered with evidence, suggestion, and fix prompt. These are the most important and justify the token cost.
+9. **Major findings — Summary table**: One row per major finding with ID, file, problem, and fix prompt. No evidence block (saves ~200 tokens per finding).
+10. **Minor findings — Counts only**: Aggregated count per category. No individual findings listed.
+11. **Suggestions — Counts only**: Aggregated count per category. No individual findings listed.
+12. **Prioritized Fix Order**: Ordered list of all critical and major fix prompts, ranked by impact.
+13. **Save report to file**: ensure `./codeprobe-reports/` exists in the current working directory (create via Bash `mkdir -p ./codeprobe-reports` if missing). Write the rendered markdown (steps 2-12, i.e. the saved-file dashboard plus all findings sections — NOT the ANSI output from step 1) to `./codeprobe-reports/{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool. After writing, emit a final terminal line: `--> Report saved to ./codeprobe-reports/{filename}` (no emoji; use the ASCII arrow). If the write fails (read-only filesystem, permission denied, etc.), surface the error as a short inline note but do not block or re-emit the terminal output.
+
+If the template does not exist, render inline following the same structure. Step 13 (save) still applies regardless.
 
 Status thresholds (applied to overall health and each category score):
 - 80-100 = "Healthy"
 - 60-79 = "Needs Attention"
 - 0-59 = "Critical"
 
-**Token budget guidance:** For a codebase with ~100 findings, the tiered findings format (steps 7-10) targets ~8,000-12,000 tokens (vs ~40,000 with full detail for all findings). The dashboard adds a small fixed cost (~400 tokens). The user can drill into specific categories with `/codeprobe security .` etc. for full detail on any category.
+**Token budget guidance:** For a codebase with ~100 findings, the tiered findings format (steps 8-11) targets ~8,000-12,000 tokens (vs ~40,000 with full detail for all findings). The dashboard adds a small fixed cost (~400 tokens). The user can drill into specific categories with `/codeprobe security .` etc. for full detail on any category.
 
 ### `/codeprobe quick` — Quick Review Summary
 

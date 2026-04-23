@@ -1,7 +1,14 @@
 <!--
   Template for /codeprobe audit output (v2.2 — dashboard + tiered findings).
   The orchestrator reads this template and fills {placeholders} with actual data.
-  Render as markdown in the user's terminal.
+
+  Rendering surfaces (see SKILL.md Section 8 for the full flow):
+    - Saved report file (./codeprobe-reports/<ts>.md) uses this template as-is —
+      plain markdown, diff-friendly, no ANSI.
+    - Terminal: the dashboard block below is ALSO rendered via
+      scripts/render_dashboard.py with ANSI color matching assets/sample-output.svg.
+      When Python 3 is unavailable, the terminal falls back to streaming this
+      markdown template directly (legacy path).
 
   Structure:
     1. Dashboard (scores, codebase stats, hot spots)
