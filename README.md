@@ -75,7 +75,11 @@ SEC-003 | Critical | src/auth/login.php:22-35
 npx skills add nishilbhave/codeprobe-claude
 ```
 
-The installer will prompt you to select which agents to install to (Claude Code, Cursor, Windsurf, Codex, Cline, etc.) and whether to install globally or per-project.
+The installer will prompt you to pick skills (select all 10 with `*`), target agents (Claude Code, Cursor, Windsurf, Codex, Cline, etc.), and scope (global or per-project). To skip prompts and install everything:
+
+```bash
+npx skills add nishilbhave/codeprobe-claude --all
+```
 
 **Optional:** Python 3.8+ enables `/codeprobe health` codebase statistics.
 
@@ -88,14 +92,28 @@ Then in any project:
 To update:
 
 ```bash
-npx skills update
+npx skills update          # project scope (from inside a project)
+npx skills update -g       # global scope
 ```
 
 To uninstall:
 
 ```bash
-npx skills remove nishilbhave/codeprobe-claude
+# Remove every codeprobe skill in one shot:
+npx skills remove codeprobe codeprobe-security codeprobe-solid \
+  codeprobe-architecture codeprobe-error-handling codeprobe-performance \
+  codeprobe-testing codeprobe-code-smells codeprobe-patterns codeprobe-framework
+
+# Or remove an individual sub-skill:
+npx skills remove codeprobe-security
+
+# Or pick interactively from all installed skills:
+npx skills remove
 ```
+
+Add `-g` to target global installs, or `-a claude-code` to remove from a specific agent only.
+
+> **Note:** `npx skills remove --all` exists but removes **every** skill on your machine from every repo, not just codeprobe's. Avoid it unless that's what you want.
 
 ---
 
