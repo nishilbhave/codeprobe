@@ -3,7 +3,7 @@
   <rect width="900" height="340" rx="8" fill="#0f172a"/>
 
   <!-- Pixel art blocks: CODE (row 1) -->
-  <g fill="#f97316">
+  <g fill="#8b5cf6">
     <!-- C -->
     <rect x="136" y="45" width="11" height="11" rx="2"/>
     <rect x="149" y="45" width="11" height="11" rx="2"/>
@@ -166,17 +166,17 @@
   </g>
 
   <!-- Accent line under pixel art -->
-  <rect x="45" y="262" width="90" height="3" rx="1" fill="#f97316"/>
+  <rect x="45" y="262" width="90" height="3" rx="1" fill="#8b5cf6"/>
 
   <!-- Tagline -->
   <text x="45" y="286" font-family="'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="300" fill="#e2e8f0" letter-spacing="0.5">Senior-Engineer Code Review</text>
-  <text x="45" y="306" font-family="'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="300" fill="#94a3b8">for Claude Code</text>
+  <text x="45" y="306" font-family="'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="300" fill="#94a3b8">for Claude Code, Cursor &amp; 45+ AI coding agents</text>
 
   <!-- Vertical divider -->
   <line x1="540" y1="55" x2="540" y2="250" stroke="#1e293b" stroke-width="1"/>
 
   <!-- Commands list (right side) -->
-  <g font-family="'SF Mono', 'Fira Code', 'Cascadia Code', Menlo, monospace" font-size="14" fill="#fdba74" text-anchor="end">
+  <g font-family="'SF Mono', 'Fira Code', 'Cascadia Code', Menlo, monospace" font-size="14" fill="#c4b5fd" text-anchor="end">
     <text x="860" y="72">/codeprobe audit &lt;path&gt;</text>
     <text x="860" y="96">/codeprobe security &lt;path&gt;</text>
     <text x="860" y="120">/codeprobe solid &lt;path&gt;</text>
@@ -188,7 +188,7 @@
 
   <!-- Stats bar -->
   <rect x="0" y="318" width="900" height="22" rx="0" fill="#1e293b"/>
-  <rect x="0" y="318" width="900" height="1" fill="#f97316" opacity="0.3"/>
+  <rect x="0" y="318" width="900" height="1" fill="#8b5cf6" opacity="0.3"/>
   <text x="450" y="334" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="11" fill="#94a3b8" text-anchor="middle" letter-spacing="1">
     9 categories  ·  11 commands  ·  6 stack guides  ·  auto-detect
   </text>

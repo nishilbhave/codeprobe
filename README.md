@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="#install"><img src="https://img.shields.io/badge/install-one--command-f97316?style=flat-square" alt="Install"/></a>
+  <a href="#install"><img src="https://img.shields.io/badge/install-one--command-8b5cf6?style=flat-square" alt="Install"/></a>
   <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"/>
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=flat-square" alt="Platform"/>
   <img src="https://img.shields.io/badge/agents-Claude%20Code%20%7C%20Cursor%20%7C%20Windsurf%20%7C%2045+-7c3aed?style=flat-square" alt="45+ Agents"/>
