@@ -23,7 +23,7 @@ Senior-engineer code review as an [agent skill](https://skills.sh). Run `/codepr
 
 ## Sample Output
 
-Every `/codeprobe audit` opens with a **health dashboard** (category scores, codebase stats, hot-spot files), then lists detailed P0–P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<timestamp>.md`.
+Every `/codeprobe audit` opens with a **health dashboard** (category scores, codebase stats, hot-spot files), then lists detailed P0–P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<project>-<cmd>-<timestamp>.md`.
 
 ### Code Health Report — growth-engine
 
@@ -60,7 +60,7 @@ Every `/codeprobe audit` opens with a **health dashboard** (category scores, cod
 - **ARCH-003** | `services/order_processor.py` ↔ `api/routers/checkout.py` — Bidirectional coupling: the service imports router types for validation while the router constructs service internals directly. Blocks both service-level unit tests and independent router evolution. **Fix:** introduce `checkout/schemas.py` as a dependency-free Pydantic layer both sides depend on.
 
 ```
---> Report saved to ./codeprobe-reports/2026-04-23-221047.md
+--> Report saved to ./codeprobe-reports/growth-engine-audit-2026-04-23-221047.md
 ```
 
 ---
@@ -77,7 +77,7 @@ Then run `/codeprobe audit .` in any project.
 
 **Optional:** Python 3.8+ enables codebase statistics in the `/codeprobe audit` dashboard.
 
-**Reports are saved** to `./codeprobe-reports/<timestamp>.md` in your current directory. Add `codeprobe-reports/` to your `.gitignore` to keep them out of source control.
+**Reports are saved** to `./codeprobe-reports/<project>-<cmd>-<timestamp>.md` in your current directory (e.g. `growth-engine-audit-2026-04-23-221047.md`) — the filename tells you which project and which command the report came from at a glance. Add `codeprobe-reports/` to your `.gitignore` to keep them out of source control.
 
 ---
 
@@ -126,7 +126,7 @@ The `<path>` argument works the same way for every command above. It can be a di
 
 - Relative paths are resolved against the directory Claude Code was started in.
 - Only files inside the given path are analyzed — everything else is ignored.
-- The report is always saved to `./codeprobe-reports/<timestamp>.md` in your **current working directory**, regardless of which path you scanned. `cd` into the project first if you want the report to land there.
+- The report is always saved to `./codeprobe-reports/<project>-<cmd>-<timestamp>.md` in your **current working directory**, regardless of which path you scanned. `cd` into the project first if you want the report to land there. The `<project>` segment is derived from the basename of the path you scanned (extension stripped for single-file scans), so reports from different projects in the same directory remain distinguishable.
 
 ---
 

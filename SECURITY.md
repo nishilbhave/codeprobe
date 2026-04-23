@@ -10,7 +10,7 @@
 
 ### One documented exception: report artifact
 
-After a successful `/codeprobe audit`, the skill writes a single markdown report to `./codeprobe-reports/<timestamp>.md` in the current working directory. This is the skill's own output artifact, not modification of reviewed code. Add `codeprobe-reports/` to your `.gitignore` if you don't want to commit reports.
+After a successful `/codeprobe audit`, the skill writes a single markdown report to `./codeprobe-reports/<project>-<cmd>-<timestamp>.md` in the current working directory (e.g. `./codeprobe-reports/growth-engine-audit-2026-04-23-221047.md`). This is the skill's own output artifact, not modification of reviewed code. Add `codeprobe-reports/` to your `.gitignore` if you don't want to commit reports.
 
 ## Bundled Scripts
 

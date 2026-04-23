@@ -3,7 +3,7 @@
   The orchestrator reads this template and fills {placeholders} with actual data.
 
   Rendering surfaces (see SKILL.md Section 8 for the full flow):
-    - Saved report file (./codeprobe-reports/<ts>.md) uses this template as-is —
+    - Saved report file (./codeprobe-reports/<project>-<cmd>-<ts>.md) uses this template as-is —
       plain markdown, diff-friendly, no ANSI.
     - Terminal: the dashboard block below is emitted directly in the assistant
       response as markdown. Modern terminals apply their own markdown styling

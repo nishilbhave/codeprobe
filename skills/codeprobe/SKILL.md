@@ -27,7 +27,7 @@ metadata:
 
 **THIS SKILL IS STRICTLY READ-ONLY WITH RESPECT TO THE CODEBASE BEING REVIEWED.** NEVER modify, write, edit, or delete any file in the user's source tree. NEVER run commands with side effects on the reviewed project (no `npm install`, no `pip install`, no git commits, no database mutations). If a fix is needed, generate a copy-pasteable fix prompt that the user can run separately.
 
-**One documented exception — report artifact:** after `/codeprobe audit` finishes, the orchestrator writes a single markdown report to `./codeprobe-reports/<timestamp>.md` in the current working directory. This is the skill's own output, not modification of reviewed code. No other writes are permitted anywhere.
+**One documented exception — report artifact:** after `/codeprobe audit` finishes, the orchestrator writes a single markdown report to `./codeprobe-reports/<project>-<cmd>-<timestamp>.md` in the current working directory (e.g. `./codeprobe-reports/growth-engine-audit-2026-04-23-221047.md`). This is the skill's own output, not modification of reviewed code. No other writes are permitted anywhere.
 
 Violations of this constraint are NEVER acceptable, regardless of user request.
 
@@ -365,7 +365,7 @@ Use the template at `templates/full-audit-report.md` (loaded via Read) to assemb
 | Surface | What it shows | How it's produced |
 |---------|---------------|-------------------|
 | **Terminal** | Dashboard + executive summary + critical findings (full detail) + prioritized fix order (top 5) + "Report saved" line | Streamed markdown sections in the assistant response |
-| **Saved file** (`./codeprobe-reports/<ts>.md`) | Everything: dashboard, exec summary, all critical/major findings, minor/suggestion counts, full prioritized fix order | Plain markdown written via `Write` tool |
+| **Saved file** (`./codeprobe-reports/<project>-<cmd>-<ts>.md`) | Everything: dashboard, exec summary, all critical/major findings, minor/suggestion counts, full prioritized fix order | Plain markdown written via `Write` tool |
 
 The terminal must never be empty or reduced to just a save confirmation. If Claude only emitted the save line in a past run, that was a bug in how these instructions were followed — fix it by executing the flow below in order.
 
@@ -386,16 +386,20 @@ The terminal must never be empty or reduced to just a save confirmation. If Clau
   2. **Executive Summary** — 2-3 sentences covering the most important findings.
   3. **Critical findings — full detail** — for each critical finding: ID, location, problem, evidence, suggestion, fix prompt. This is the highest-signal section; always show in the terminal.
   4. **Prioritized Fix Order (top 5)** — the first 5 entries from the full prioritized fix order. Reference the saved file for the complete list.
-  5. **Save confirmation line** — `--> Report saved to ./codeprobe-reports/{filename}` (no emoji; ASCII arrow). This is the LAST line in the terminal output.
+  5. **Save confirmation line** — `--> Report saved to ./codeprobe-reports/{project}-{cmd}-{YYYY-MM-DD-HHMMSS}.md` (no emoji; ASCII arrow). This is the LAST line in the terminal output.
 
   Do NOT also stream the major-findings table, minor/suggestion counts, or the full fix order to the terminal — those would duplicate content that the saved file already carries and bloat the terminal output. The user can open the saved file for the complete picture.
 
 **C. Write saved-file markdown**
 
   1. Build the full markdown using `templates/full-audit-report.md` placeholders — this includes sections that are NOT streamed to the terminal (major findings table, minor/suggestion counts, full prioritized fix order).
-  2. Ensure `./codeprobe-reports/` exists (`mkdir -p ./codeprobe-reports` via Bash if missing).
-  3. Write to `./codeprobe-reports/{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool.
-  4. If the write fails (read-only filesystem, permission denied, etc.), surface a short inline note in the terminal but do not re-emit the summary.
+  2. Derive the filename as `{project}-{cmd}-{YYYY-MM-DD-HHMMSS}.md`:
+     - `{project}` — resolve the target path to an absolute path (use the current working directory if the user passed no path); take its basename; if that basename points to a file, strip the extension; slugify it (lowercase; replace any run of `[^a-z0-9]+` with a single `-`; trim leading/trailing `-`); fall back to `unknown` if the slug ends up empty.
+     - `{cmd}` — the subcommand routed in Section 1 (`audit`, `quick`, `security`, `solid`, `architecture`, `performance`, `errors`, `tests`, `smells`, `patterns`, `framework`), lowercased.
+     - `{YYYY-MM-DD-HHMMSS}` — current local time.
+  3. Ensure `./codeprobe-reports/` exists (`mkdir -p ./codeprobe-reports` via Bash if missing).
+  4. Write to `./codeprobe-reports/{project}-{cmd}-{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool.
+  5. If the write fails (read-only filesystem, permission denied, etc.), surface a short inline note in the terminal but do not re-emit the summary.
 
 **D. Terminal-output contract (hard requirements)**
 
