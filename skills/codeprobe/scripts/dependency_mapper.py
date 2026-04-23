@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-dependency_mapper.py — Import/dependency graph builder for codeprobe-claude.
+dependency_mapper.py — Import/dependency graph builder for codeprobe.
 
 Builds an import/dependency graph from source files and detects circular
 dependencies. Outputs JSON to stdout.
