@@ -25,40 +25,42 @@ Senior-engineer code review as an [agent skill](https://skills.sh). Run `/codepr
 
 Every `/codeprobe audit` opens with a **health dashboard** (category scores, codebase stats, hot-spot files), then lists detailed P0–P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<timestamp>.md`.
 
-### Code Health Report — backend/app/agents
+### Code Health Report — growth-engine
 
-**Overall Health:** 82/100 [Healthy]
+**Overall Health:** 58/100 [Critical]
 
 **Category Scores**
 
 | Category | Score | Bar | Status |
 |---|---|---|---|
-| Security | 84/100 | `████████████████░░░░` | Healthy |
-| SOLID | 72/100 | `██████████████░░░░░░` | Needs Attention |
-| Architecture | 94/100 | `███████████████████░` | Healthy |
-| Error Handling | 47/100 | `█████████░░░░░░░░░░░` | Critical |
-| Performance | 92/100 | `██████████████████░░` | Healthy |
-| Test Quality | 96/100 | `███████████████████░` | Healthy |
-| Code Smells | 96/100 | `███████████████████░` | Healthy |
-| Patterns | 94/100 | `███████████████████░` | Healthy |
-| Framework | 98/100 | `████████████████████` | Healthy |
+| Security | 72/100 | `██████████████░░░░░░` | Needs Attention |
+| SOLID | 45/100 | `█████████░░░░░░░░░░░` | Critical |
+| Architecture | 55/100 | `███████████░░░░░░░░░` | Critical |
+| Error Handling | 38/100 | `████████░░░░░░░░░░░░` | Critical |
+| Performance | 62/100 | `████████████░░░░░░░░` | Needs Attention |
+| Test Quality | 48/100 | `██████████░░░░░░░░░░` | Critical |
+| Code Smells | 65/100 | `█████████████░░░░░░░` | Needs Attention |
+| Patterns | 78/100 | `████████████████░░░░` | Needs Attention |
+| Framework | 86/100 | `█████████████████░░░` | Healthy |
 
-**Codebase:** 118 files · 16,823 LOC · Python 3.12 / FastAPI / Pydantic v2 / google-genai
+**Codebase:** 391 files · 64,146 LOC · Python 3.11 / FastAPI + Next.js / PostgreSQL / Redis
 
 **Hot spots:**
 
-1. `runner.py` — 6 categories flagged (SOLID, Error Handling, Patterns, ...)
-2. `planner_runner.py` — 3 categories flagged (Error Handling, Patterns, SOLID)
-3. `pipeline.py` — 3 categories flagged (Error Handling, Architecture, Performance)
+1. `services/order_processor.py` — 7 categories flagged (SOLID, Error Handling, Performance, Code Smells, Test Quality, Patterns, Architecture)
+2. `api/routers/checkout.py` — 5 categories flagged (Security, SOLID, Error Handling, Performance, Test Quality)
+3. `frontend/src/pages/dashboard.tsx` — 4 categories flagged (Architecture, Code Smells, Patterns, Test Quality)
 
-**Executive Summary:** Healthy overall, one clear weak spot — error handling (47, Critical). Two systemic themes: four of five async-generator runners lack a top-level `try/except` and terminal SSE events, and the "drive agent + validate" loop is duplicated ~6 times across runners.
+**Executive Summary:** Systemic issues across four categories. The biggest blocker is **error handling (38)** — 14 swallowed exceptions in payment paths, no top-level `try/except` in any of the three async workers, and transaction boundaries leak across service calls. **SOLID (45)** is dominated by `OrderProcessor` as a 1,420-LOC god class handling pricing, inventory, fulfillment, and notifications. **Architecture (55)** has a bidirectional dependency between `services/` and `api/` that makes the checkout path near-impossible to test in isolation. Security (72) is mostly sound but string-concatenation SQL in `reports/query_builder.py:88` needs to be fixed before the next release.
 
-**Critical (P0 — 1 finding):**
+**Critical (P0 — 3 findings):**
 
-- **ERR-001** | `growth_engine/pipeline.py:301-410` — `run_pipeline` has no top-level `try/except`; the documented `pipeline_error` event is never emitted, so the SSE client hangs on unhandled exceptions.
+- **SEC-001** | `reports/query_builder.py:88` — SQL built with string concatenation against the unsanitized `filters` request param. Direct injection via `POST /reports`. **Fix:** parameterize with SQLAlchemy `text(...)` + bind params, or move the query to the ORM.
+- **ERR-007** | `workers/payment_worker.py:42-139` — `process_refund` wraps the Stripe call in a bare `try/except Exception: pass`. Failed refunds are silently dropped from the retry queue. **Fix:** catch `stripe.error.StripeError` explicitly, enqueue the payload on a dead-letter queue, alert on `InvalidRequestError`.
+- **ARCH-003** | `services/order_processor.py` ↔ `api/routers/checkout.py` — Bidirectional coupling: the service imports router types for validation while the router constructs service internals directly. Blocks both service-level unit tests and independent router evolution. **Fix:** introduce `checkout/schemas.py` as a dependency-free Pydantic layer both sides depend on.
 
 ```
---> Report saved to ./codeprobe-reports/2026-04-23-215809.md
+--> Report saved to ./codeprobe-reports/2026-04-23-221047.md
 ```
 
 ---
