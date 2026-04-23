@@ -15,20 +15,20 @@
 
 # Code Health Report — {project_name}
 
-**Overall Health:** {overall_score}/100 {status_emoji} {status_label}
+**Overall Health:** {overall_score}/100 [{status_label}]
 
 **Category Scores:**
 
 ```
-  Architecture    {bar} {score}/100 {status}
-  Security        {bar} {score}/100 {status}
-  Framework       {bar} {score}/100 {status}
-  Performance     {bar} {score}/100 {status}
-  SOLID           {bar} {score}/100 {status}
-  Design Patterns {bar} {score}/100 {status}
-  Code Smells     {bar} {score}/100 {status}
-  Test Quality    {bar} {score}/100 {status}
-  Error Handling  {bar} {score}/100 {status}
+  Architecture    {bar} {score}/100 [{status_label}]
+  Security        {bar} {score}/100 [{status_label}]
+  Framework       {bar} {score}/100 [{status_label}]
+  Performance     {bar} {score}/100 [{status_label}]
+  SOLID           {bar} {score}/100 [{status_label}]
+  Design Patterns {bar} {score}/100 [{status_label}]
+  Code Smells     {bar} {score}/100 [{status_label}]
+  Test Quality    {bar} {score}/100 [{status_label}]
+  Error Handling  {bar} {score}/100 [{status_label}]
 ```
 
 <!-- bar = 10-char block-character bar proportional to score; status = Healthy (80+) / Needs Attention (60-79) / Critical (0-59) -->

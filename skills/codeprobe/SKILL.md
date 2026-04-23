@@ -237,12 +237,12 @@ Every finding from every sub-skill MUST include these fields:
 
 ## 6. Severity Levels
 
-| Level | Emoji | Meaning | Examples |
-|-------|-------|---------|----------|
-| Critical | 🔴 | **Confirmed bugs, exploitable security vulnerabilities, or data loss/corruption risks** that would cause harm in production | SQL injection with user input, missing auth on data-mutating endpoint, race condition causing data corruption, unhandled crash on a core path, missing DB transaction on multi-step writes |
-| Major | 🟠 | Significant maintainability, reliability, or scalability problem that increases risk but is not an immediate production defect | Missing tests for critical business logic, large classes, code duplication, missing error handling on external calls, N+1 queries, missing input validation |
-| Minor | 🟡 | Code smell, low risk, worth addressing for long-term health | Magic numbers, deep nesting, poor naming, missing edge case tests, verbose error details |
-| Suggestion | 🔵 | Improvement idea, nice to have, no real risk if ignored | Pattern opportunities, style improvements, speculative generality |
+| Level | Priority | Meaning | Examples |
+|-------|----------|---------|----------|
+| Critical | P0 | **Confirmed bugs, exploitable security vulnerabilities, or data loss/corruption risks** that would cause harm in production | SQL injection with user input, missing auth on data-mutating endpoint, race condition causing data corruption, unhandled crash on a core path, missing DB transaction on multi-step writes |
+| Major | P1 | Significant maintainability, reliability, or scalability problem that increases risk but is not an immediate production defect | Missing tests for critical business logic, large classes, code duplication, missing error handling on external calls, N+1 queries, missing input validation |
+| Minor | P2 | Code smell, low risk, worth addressing for long-term health | Magic numbers, deep nesting, poor naming, missing edge case tests, verbose error details |
+| Suggestion | P3 | Improvement idea, nice to have, no real risk if ignored | Pattern opportunities, style improvements, speculative generality |
 
 ### Severity Guardrails
 
@@ -360,8 +360,8 @@ Render the final output based on the command used.
 
 Use the template at `templates/full-audit-report.md` (loaded via Read). The template opens with a **visual health dashboard** (category scores, codebase stats, hot spots) and then uses a **tiered output format** for findings to control token usage. Render order:
 
-1. **Dashboard header**: `Code Health Report — {project}` title line and `Overall Health: {score}/100 {status_emoji}` where status is derived from the thresholds in the "Status thresholds" block below.
-2. **Category score bars**: a 10-character block-character bar proportional to the score for each of the 9 categories (Architecture, Security, Framework, Performance, SOLID, Design Patterns, Code Smells, Test Quality, Error Handling), followed by `{score}/100 {status}`.
+1. **Dashboard header**: `Code Health Report — {project}` title line and `Overall Health: {score}/100 [{status_label}]` where `{status_label}` is derived from the thresholds in the "Status thresholds" block below. Do not use emoji; wrap the status label in square brackets (e.g., `[Healthy]`, `[Needs Attention]`, `[Critical]`).
+2. **Category score bars**: a 10-character block-character bar proportional to the score for each of the 9 categories (Architecture, Security, Framework, Performance, SOLID, Design Patterns, Code Smells, Test Quality, Error Handling), followed by `{score}/100 [{status_label}]`. No emoji.
 3. **Codebase Stats**: output of `scripts/file_stats.py` (total files, LOC, backend/frontend split, largest file, test file ratio, comment ratio). If Python 3 is unavailable, omit this block and note: "Install Python 3 for codebase statistics."
 4. **Hot Spots**: top 3 files by distinct-categories-flagged (computed from the same findings that feed the scores).
 5. Horizontal rule.
@@ -371,7 +371,7 @@ Use the template at `templates/full-audit-report.md` (loaded via Read). The temp
 9. **Minor findings — Counts only**: Aggregated count per category. No individual findings listed.
 10. **Suggestions — Counts only**: Aggregated count per category. No individual findings listed.
 11. **Prioritized Fix Order**: Ordered list of all critical and major fix prompts, ranked by impact.
-12. **Save report to file**: ensure `./codeprobe-reports/` exists in the current working directory (create via Bash `mkdir -p ./codeprobe-reports` if missing). Write the full rendered markdown from steps 1-11 to `./codeprobe-reports/{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool. Use the same markdown that was rendered to the terminal — do NOT re-render. After writing, emit a final terminal line: `📄 Report saved to ./codeprobe-reports/{filename}`. If the write fails (read-only filesystem, permission denied, etc.), surface the error as a short inline note but do not block or re-emit the terminal output.
+12. **Save report to file**: ensure `./codeprobe-reports/` exists in the current working directory (create via Bash `mkdir -p ./codeprobe-reports` if missing). Write the full rendered markdown from steps 1-11 to `./codeprobe-reports/{YYYY-MM-DD-HHMMSS}.md` using the `Write` tool. Use the same markdown that was rendered to the terminal — do NOT re-render. After writing, emit a final terminal line: `--> Report saved to ./codeprobe-reports/{filename}` (no emoji; use the ASCII arrow). If the write fails (read-only filesystem, permission denied, etc.), surface the error as a short inline note but do not block or re-emit the terminal output.
 
 If the template does not exist, render inline following the same structure. Step 12 (save) still applies regardless.
 

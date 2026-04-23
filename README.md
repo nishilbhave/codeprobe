@@ -23,48 +23,31 @@ Senior-engineer code review as an [agent skill](https://skills.sh). Run `/codepr
 
 ## Sample Output
 
-### `/codeprobe health`
+Every `/codeprobe audit` opens with a visual **health dashboard** — category scores, codebase stats, and hot-spot files — then lists detailed P0-P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<timestamp>.md`.
+
+<p align="center">
+  <img src="assets/sample-output.svg" alt="Sample /codeprobe audit output: dashboard with category scores, codebase stats, and hot spots" width="900"/>
+</p>
+
+Below the dashboard, each finding includes an ID, severity, file location, evidence, and a fix prompt you can run directly in Claude Code:
 
 ```
-Code Health Report — Growth Engine
-
-Overall Health: 55/100 🟡 Needs Attention
-
-Category Scores:
-    Architecture       █████████████████░░░  91/100  ✅ Healthy
-    Security           ████████████░░░░░░░░  62/100  🟡 Needs Attention
-    Framework          ████████████░░░░░░░░  60/100  🟡 Needs Attention
-    Performance        ███████████░░░░░░░░░  58/100  🔴 Critical
-    SOLID              ███████████░░░░░░░░░  55/100  🔴 Critical
-    Design Patterns    ███████████░░░░░░░░░  55/100  🔴 Critical
-    Code Smells        █████████░░░░░░░░░░░  46/100  🔴 Critical
-    Test Quality       █████░░░░░░░░░░░░░░░  28/100  🔴 Critical
-    Error Handling     ████░░░░░░░░░░░░░░░░  22/100  🔴 Critical
-
-Codebase Stats:
-    Files: 391        | Total LOC: 64,146
-    Backend: 170 py (20,907 LOC)   | Frontend: 221 ts/tsx (43,239 LOC)
-    Largest file: frontend/app/growth-engine/ads/page.tsx (1,979 LOC)
-    Test files: 29 / 391 (7.4%)
-    Comment ratio: 1.1%
-
-Hot Spots (files needing most attention):
-    1. frontend/app/growth-engine/ads/page.tsx  — 3 categories flagged (SOLID, Code Smells, Architecture)
-    2. backend/app/routers/agents.py            — 3 categories flagged (SOLID, Architecture, Design Patterns)
-    3. backend/app/services/dependency_resolver.py — 3 categories flagged (Error Handling, Performance, Patterns)
-```
-
-### `/codeprobe audit`
-
-Each finding includes an ID, severity, file location, evidence, and a fix prompt you can run directly in Claude Code:
-
-```
-SEC-003 | Critical | src/auth/login.php:22-35
+[CRITICAL]  SEC-003  ·  src/auth/login.php:22-35
 
   Problem:  SQL query built with string concatenation using unsanitized user input.
   Evidence: Line 25: $query = "SELECT * FROM users WHERE email = '" . $_POST['email'] . "'";
   Fix:      Refactor src/auth/login.php lines 22-35 to use PDO prepared statements
             instead of string concatenation for the SQL query.
+
+[MAJOR]     ARCH-011  ·  backend/app/routers/agents.py:45-210
+  God router — handles auth, validation, business logic, and persistence in one file.
+  -> Extract business logic into an AgentService; keep router thin (validation + delegation).
+
+[MAJOR]     ERR-004   ·  frontend/app/growth-engine/ads/page.tsx:88
+  Promise rejection swallowed in `await fetchAds().catch(() => [])`.
+  -> Log the error and rethrow, or surface it via an error boundary.
+
+--> Report saved to ./codeprobe-reports/2026-04-23-120145.md
 ```
 
 ---
