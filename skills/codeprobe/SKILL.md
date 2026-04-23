@@ -382,7 +382,7 @@ The terminal must never be empty or reduced to just a save confirmation. If Clau
 
   (`scripts/render_dashboard.py` exists for users running the audit directly from their own shell outside Claude Code, where its stdout is a real TTY. Do NOT invoke it from within the `/codeprobe audit` flow.)
 
-  1. **Dashboard (markdown)** — emit the dashboard block inline. Include: title line (`## Code Health Report — {project}`), `**Overall Health:** {score}/100 [{status_label}]`, the 9-row category bar block (10-char Unicode bars `█`/`░`) with `{name} {bar} {score}/100 [{status_label}]`, codebase stats block (files, LOC, backend/frontend split, largest file, test ratio, comment ratio), and a hot-spots list (up to 3 entries). Status labels in brackets, no emoji.
+  1. **Dashboard (markdown)** — emit the dashboard block inline. Include: title line (`## Code Health Report — {project}`), `**Overall Health:** {score}/100 [{status_label}]`, the 9-row **Category Scores markdown table** with columns `Category | Score | Bar | Status` (bar wrapped in backticks, 20-char Unicode `█`/`░` proportional to score), codebase stats block (files, LOC, backend/frontend split, largest file, test ratio, comment ratio), and a hot-spots list (up to 3 entries). Status labels plain text in the Status column, no emoji, no brackets inside the table.
   2. **Executive Summary** — 2-3 sentences covering the most important findings.
   3. **Critical findings — full detail** — for each critical finding: ID, location, problem, evidence, suggestion, fix prompt. This is the highest-signal section; always show in the terminal.
   4. **Prioritized Fix Order (top 5)** — the first 5 entries from the full prioritized fix order. Reference the saved file for the complete list.

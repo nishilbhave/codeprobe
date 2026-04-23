@@ -26,21 +26,21 @@
 
 **Overall Health:** {overall_score}/100 [{status_label}]
 
-**Category Scores:**
+**Category Scores**
 
-```
-  Architecture    {bar} {score}/100 [{status_label}]
-  Security        {bar} {score}/100 [{status_label}]
-  Framework       {bar} {score}/100 [{status_label}]
-  Performance     {bar} {score}/100 [{status_label}]
-  SOLID           {bar} {score}/100 [{status_label}]
-  Design Patterns {bar} {score}/100 [{status_label}]
-  Code Smells     {bar} {score}/100 [{status_label}]
-  Test Quality    {bar} {score}/100 [{status_label}]
-  Error Handling  {bar} {score}/100 [{status_label}]
-```
+| Category | Score | Bar | Status |
+|---|---|---|---|
+| Architecture | {score}/100 | `{bar}` | {status_label} |
+| Security | {score}/100 | `{bar}` | {status_label} |
+| Framework | {score}/100 | `{bar}` | {status_label} |
+| Performance | {score}/100 | `{bar}` | {status_label} |
+| SOLID | {score}/100 | `{bar}` | {status_label} |
+| Design Patterns | {score}/100 | `{bar}` | {status_label} |
+| Code Smells | {score}/100 | `{bar}` | {status_label} |
+| Test Quality | {score}/100 | `{bar}` | {status_label} |
+| Error Handling | {score}/100 | `{bar}` | {status_label} |
 
-<!-- bar = 10-char block-character bar proportional to score; status = Healthy (80+) / Needs Attention (60-79) / Critical (0-59) -->
+<!-- bar = 20-char block-character bar proportional to score (`█` filled, `░` empty); status = Healthy (80+) / Needs Attention (60-79) / Critical (0-59) -->
 
 **Codebase Stats:** <!-- from scripts/file_stats.py; omit this block if Python 3 unavailable and emit the one-line note below -->
 

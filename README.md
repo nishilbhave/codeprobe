@@ -23,11 +23,43 @@ Senior-engineer code review as an [agent skill](https://skills.sh). Run `/codepr
 
 ## Sample Output
 
-Every `/codeprobe audit` opens with a visual **health dashboard** (category scores, codebase stats, hot-spot files), then lists detailed P0-P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<timestamp>.md`.
+Every `/codeprobe audit` opens with a **health dashboard** (category scores, codebase stats, hot-spot files), then lists detailed P0–P3 findings with fix prompts, and saves the whole report to `./codeprobe-reports/<timestamp>.md`.
 
-<p align="center">
-  <img src="assets/sample-output.svg" alt="Sample /codeprobe audit output: health dashboard with category scores, codebase stats, hot spots, and a critical and two major findings with fix prompts" width="900"/>
-</p>
+### Code Health Report — backend/app/agents
+
+**Overall Health:** 82/100 [Healthy]
+
+**Category Scores**
+
+| Category | Score | Bar | Status |
+|---|---|---|---|
+| Security | 84/100 | `████████████████░░░░` | Healthy |
+| SOLID | 72/100 | `██████████████░░░░░░` | Needs Attention |
+| Architecture | 94/100 | `███████████████████░` | Healthy |
+| Error Handling | 47/100 | `█████████░░░░░░░░░░░` | Critical |
+| Performance | 92/100 | `██████████████████░░` | Healthy |
+| Test Quality | 96/100 | `███████████████████░` | Healthy |
+| Code Smells | 96/100 | `███████████████████░` | Healthy |
+| Patterns | 94/100 | `███████████████████░` | Healthy |
+| Framework | 98/100 | `████████████████████` | Healthy |
+
+**Codebase:** 118 files · 16,823 LOC · Python 3.12 / FastAPI / Pydantic v2 / google-genai
+
+**Hot spots:**
+
+1. `runner.py` — 6 categories flagged (SOLID, Error Handling, Patterns, ...)
+2. `planner_runner.py` — 3 categories flagged (Error Handling, Patterns, SOLID)
+3. `pipeline.py` — 3 categories flagged (Error Handling, Architecture, Performance)
+
+**Executive Summary:** Healthy overall, one clear weak spot — error handling (47, Critical). Two systemic themes: four of five async-generator runners lack a top-level `try/except` and terminal SSE events, and the "drive agent + validate" loop is duplicated ~6 times across runners.
+
+**Critical (P0 — 1 finding):**
+
+- **ERR-001** | `growth_engine/pipeline.py:301-410` — `run_pipeline` has no top-level `try/except`; the documented `pipeline_error` event is never emitted, so the SSE client hangs on unhandled exceptions.
+
+```
+--> Report saved to ./codeprobe-reports/2026-04-23-215809.md
+```
 
 ---
 

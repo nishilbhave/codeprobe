@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Render the codeprobe audit dashboard with ANSI color to the terminal.
 
-Reads a JSON payload on stdin and prints a colored dashboard to stdout that
-mirrors the visual palette of assets/sample-output.svg. Falls back to plain
-text when the terminal does not support color, when NO_COLOR is set, or when
-stdout is not a TTY (so piped output stays clean).
+Reads a JSON payload on stdin and prints a colored dashboard to stdout.
+Intended for direct CLI use outside Claude Code (where stdout is a real TTY);
+the /codeprobe audit flow itself emits the dashboard as plain markdown in the
+assistant response and does not invoke this script. Falls back to plain text
+when the terminal does not support color, when NO_COLOR is set, or when
+stdout is not a TTY and no opt-in env var (FORCE_COLOR / CLAUDECODE) is set.
 
 Expected JSON payload:
 {
@@ -34,7 +36,6 @@ import sys
 from typing import Any
 
 
-# Palette matches assets/sample-output.svg
 GREEN = (74, 222, 128)    # #4ade80 — Healthy
 YELLOW = (234, 179, 8)    # #eab308 — Needs Attention
 RED = (248, 113, 113)     # #f87171 — Critical
