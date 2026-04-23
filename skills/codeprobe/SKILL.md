@@ -378,11 +378,11 @@ The terminal must never be empty or reduced to just a save confirmation. If Clau
 
 **B. Render to terminal** (user-facing — emit these as the assistant response, in order)
 
-  1. **Colored dashboard (ANSI)** — if Python 3 is available, invoke `scripts/render_dashboard.py` via the Bash tool, piping a JSON payload (shape: `project_name`, `overall_score`, `categories`, `stats`, `hot_spots`, `command_label`) on stdin:
+  1. **Colored dashboard (ANSI)** — **Always** invoke `scripts/render_dashboard.py` first via the Bash tool, piping a JSON payload (shape: `project_name`, `overall_score`, `categories`, `stats`, `hot_spots`, `command_label`) on stdin. Prepend `FORCE_COLOR=1` so bars render in color even though the Bash tool captures stdout (no TTY):
      ```
-     printf '%s' '<json>' | python3 skills/codeprobe/scripts/render_dashboard.py
+     printf '%s' '<json>' | FORCE_COLOR=1 python3 skills/codeprobe/scripts/render_dashboard.py
      ```
-     The script handles truecolor/no-color auto-detection, `NO_COLOR=1`, and TTY detection. Its stdout goes straight to the user's terminal with ANSI preserved. If Python 3 is unavailable or the Bash call errors, fall back to streaming the markdown dashboard (B.2 replaces B.1).
+     The script honors `NO_COLOR=1` (user opt-out wins), `FORCE_COLOR`/`CLAUDECODE` (opt-in bypasses the TTY check), and auto-detects truecolor vs 256-color. Its stdout goes straight to the user's terminal with ANSI preserved. Only fall back to B.2 if the Bash call returns a non-zero exit code (e.g., `python3` not on PATH, script missing). Do not skip B.1 preemptively.
   2. **Markdown dashboard (fallback only)** — use only when B.1 failed. Emits: title line, `Overall Health: {score}/100 [{status_label}]`, the 9-row category bar block (10-char Unicode bars), codebase stats block, hot spots list. Status labels in brackets, no emoji. Palette-less but structurally identical to B.1.
   3. **Executive Summary** — 2-3 sentences covering the most important findings.
   4. **Critical findings — full detail** — for each critical finding: ID, location, problem, evidence, suggestion, fix prompt. This is the highest-signal section; always show in the terminal.

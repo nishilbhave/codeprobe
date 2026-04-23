@@ -46,17 +46,29 @@ TRACK = (30, 41, 59)      # #1e293b — bar track / dividers
 def supports_color() -> bool:
     if os.environ.get("NO_COLOR"):
         return False
-    if not sys.stdout.isatty():
-        return False
     term = os.environ.get("TERM", "")
     if term == "dumb":
+        return False
+    # Force color when the caller opts in (FORCE_COLOR) or when running inside
+    # Claude Code, whose Bash tool captures stdout — so isatty() is False and
+    # would otherwise defeat color output even on a truecolor terminal.
+    if os.environ.get("FORCE_COLOR") or os.environ.get("CLAUDECODE"):
+        return True
+    if not sys.stdout.isatty():
         return False
     return True
 
 
 def supports_truecolor() -> bool:
     ct = os.environ.get("COLORTERM", "").lower()
-    return ct in ("truecolor", "24bit")
+    if ct in ("truecolor", "24bit"):
+        return True
+    # Claude Code's shell advertises COLORTERM=truecolor, but the env var may
+    # not always propagate through tool boundaries. Assume truecolor when
+    # CLAUDECODE is set so bar backgrounds render at full fidelity.
+    if os.environ.get("CLAUDECODE"):
+        return True
+    return False
 
 
 USE_COLOR = supports_color()
