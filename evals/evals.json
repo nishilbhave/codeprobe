@@ -1,0 +1,49 @@
+{
+  "skill_name": "codeprobe",
+  "notes": "Fixture lives in evals/fixture (intentionally flawed code; defect map in evals/expected-findings.md). Run prompts from the repo root. Grade against expected-findings.md: location + category + severity bucket, not exact IDs/wording.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/codeprobe audit evals/fixture",
+      "expected_output": "Terminal: health dashboard (9 category scores + overall), executive summary, full detail for the planted criticals, top-5 fix order, save-confirmation line. Saved report under ./codeprobe-reports/. Findings match evals/expected-findings.md buckets.",
+      "files": [],
+      "assertions": [
+        "Finds the SQL injection in app.py search_reports() and rates it Critical",
+        "Finds the hardcoded STRIPE_SECRET_KEY in app.py and rates it Critical",
+        "Finds the missing-auth DELETE endpoint in app.py and rates it Critical",
+        "Finds the password-in-logs defect in app.py login() and rates it Critical",
+        "Finds the missing transaction in orders.py create_order() and rates it Critical",
+        "Finds the N+1 query loop in orders.py order_summaries() and rates it Major — NOT Critical",
+        "Finds the models.py <-> services.py circular import (via dependency_mapper ground truth) and rates it Major",
+        "Reports the UserManager god class exactly once after dedup, with an 'Also flagged by' cross-reference, rated Major — NOT Critical",
+        "Finds the assertion-free tests in tests/test_orders.py rated Major at most (Test Quality never exceeds Major)",
+        "Zero Critical findings from Test Quality, Code Smells, Patterns, or Framework categories",
+        "Terminal output contains the dashboard and critical findings, not only a 'Report saved' line",
+        "A report file is written to ./codeprobe-reports/ and no fixture file is modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/codeprobe quick evals/fixture",
+      "expected_output": "Top 5 issues, each with full output-contract detail (evidence + fix prompt), produced in a single scan-mode pass (no re-runs). The top 5 should be dominated by the planted criticals.",
+      "files": [],
+      "assertions": [
+        "Returns exactly 5 findings, each including evidence and a copy-pasteable fix prompt",
+        "At least 3 of the top 5 are planted criticals (SQL injection, hardcoded secret, missing auth, password logging, or missing transaction)",
+        "Sub-skills run once each in scan mode — no second full-mode pass over the codebase",
+        "No fixture file is modified"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/codeprobe security evals/fixture",
+      "expected_output": "Security-only findings covering the planted SEC defects, in the standard output contract with severity rationales.",
+      "files": [],
+      "assertions": [
+        "Finds at least: SQL injection, hardcoded secret, missing auth on DELETE, password logging",
+        "Every finding includes a severity_rationale sentence explaining the bucket boundary",
+        "Does not report SOLID/code-smell findings (single-category run)"
+      ]
+    }
+  ]
+}

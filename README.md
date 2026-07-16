@@ -53,11 +53,14 @@ Every `/codeprobe audit` opens with a **health dashboard** (category scores, cod
 
 **Executive Summary:** Systemic issues across four categories. The biggest blocker is **error handling (38)** — 14 swallowed exceptions in payment paths, no top-level `try/except` in any of the three async workers, and transaction boundaries leak across service calls. **SOLID (45)** is dominated by `OrderProcessor` as a 1,420-LOC god class handling pricing, inventory, fulfillment, and notifications. **Architecture (55)** has a bidirectional dependency between `services/` and `api/` that makes the checkout path near-impossible to test in isolation. Security (72) is mostly sound but string-concatenation SQL in `reports/query_builder.py:88` needs to be fixed before the next release.
 
-**Critical (P0 — 3 findings):**
+**Critical (P0 — 2 findings):**
 
 - **SEC-001** | `reports/query_builder.py:88` — SQL built with string concatenation against the unsanitized `filters` request param. Direct injection via `POST /reports`. **Severity rationale:** Critical (not Major) because the endpoint is public, unauthenticated, and user input flows directly into the SQL string — exploitable as-is, no preconditions. **Fix:** parameterize with SQLAlchemy `text(...)` + bind params, or move the query to the ORM.
 - **ERR-007** | `workers/payment_worker.py:42-139` — `process_refund` wraps the Stripe call in a bare `try/except Exception: pass`. Failed refunds are silently dropped from the retry queue. **Severity rationale:** Critical (not Major) because dropped refunds cause real financial loss and the silent swallow means no operator signal — data-loss path, not just a reliability risk. **Fix:** catch `stripe.error.StripeError` explicitly, enqueue the payload on a dead-letter queue, alert on `InvalidRequestError`.
-- **ARCH-003** | `services/order_processor.py` ↔ `api/routers/checkout.py` — Bidirectional coupling: the service imports router types for validation while the router constructs service internals directly. Blocks both service-level unit tests and independent router evolution. **Severity rationale:** Critical (not Major) because the checkout path cannot be tested in isolation today — every change in this area ships unverified to a revenue-critical flow. **Fix:** introduce `checkout/schemas.py` as a dependency-free Pydantic layer both sides depend on.
+
+**Top Major (P1 — of 14):**
+
+- **ARCH-003** | `services/order_processor.py` ↔ `api/routers/checkout.py` — Bidirectional coupling: the service imports router types for validation while the router constructs service internals directly. Blocks both service-level unit tests and independent router evolution. **Severity rationale:** Major (not Minor) because the checkout path cannot be tested in isolation and every change in this area ships unverified to a revenue-critical flow; not Critical because it is a structural risk, not a confirmed defect or exploit. **Fix:** introduce `checkout/schemas.py` as a dependency-free Pydantic layer both sides depend on.
 
 ```
 --> Report saved to ./codeprobe-reports/growth-engine-audit-2026-04-23-221047.md
@@ -86,6 +89,7 @@ Then run `/codeprobe audit .` in any project.
 | Command | Description |
 |---------|-------------|
 | `/codeprobe audit <path>` | Full audit -- health dashboard (scores, file statistics, hot spots) plus detailed findings with fix prompts |
+| `/codeprobe diff [base]` | PR-style review of changed files vs a base branch (default `main`, fallback `master`) -- output is paste-ready as a GitHub PR comment |
 | `/codeprobe quick <path>` | Top 5 most impactful issues with fix prompts |
 | `/codeprobe security <path>` | Security vulnerability detection |
 | `/codeprobe solid <path>` | SOLID principles analysis |
@@ -134,7 +138,7 @@ The `<path>` argument works the same way for every command above. It can be a di
 
 The system uses an **orchestrator + sub-skill** architecture:
 
-1. **Orchestrator** (`skills/codeprobe/SKILL.md`) -- Routes commands, detects your tech stack, loads config, and invokes specialized sub-skills.
+1. **Orchestrator** (`skills/codeprobe/SKILL.md`) -- Routes commands, detects your tech stack, loads config, and spawns the specialized sub-skills **in parallel** as independent agents. Each agent receives a file manifest and reads only the files its domain needs, so audits stay fast and token-lean even on larger codebases.
 2. **Sub-skills** -- Domain experts that each analyze one category:
    - `codeprobe-security` -- SQL injection, XSS, hardcoded secrets, auth issues
    - `codeprobe-error-handling` -- Swallowed exceptions, missing try/catch, transaction safety
@@ -151,6 +155,7 @@ The system uses an **orchestrator + sub-skill** architecture:
    - `complexity_scorer.py` -- Cyclomatic complexity per function
    - `dependency_mapper.py` -- Import graph and circular dependency detection
    - `generate_report.py` -- Markdown report generation from audit findings
+5. **Regression evals** (`evals/`) -- A planted-defect fixture project plus expected findings (`evals/expected-findings.md`), for checking severity stability, dedup, and scoring whenever the skill or the underlying model changes.
 
 Stack detection is automatic. The orchestrator scans for file extensions and project markers (e.g., `next.config.*`, `migrations/` directory) and loads the appropriate reference guides.
 

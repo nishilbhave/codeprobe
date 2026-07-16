@@ -703,12 +703,12 @@ User: uploads 3 files
 - PR review comment template
 
 ### Phase 3 — Parallel & Polish
-- 4 parallel agents for `/codeprobe audit`
+- ✅ Parallel sub-skill agents for `/codeprobe audit` and `/codeprobe quick` (shipped v2.2.0 — all 9 spawn in a single message; sub-agents read files via a manifest instead of receiving pre-loaded source)
 - `generate_report.py` for PDF output
-- `/codeprobe diff` for git-based PR review
+- ✅ `/codeprobe diff` for git-based PR review (shipped v2.2.0 — merge-base diff, changed-file scoping, `pr-review-comment.md` rendering)
 - SARIF/JSON output for CI integration
 - Install/uninstall scripts
-- README + docs
+- ✅ README + docs
 
 ---
 
@@ -736,4 +736,4 @@ User: uploads 3 files
 8. Write launch blog post on maketocreate.com targeting "claude code review skill" keyword
 9. Iterate based on real findings
 10. Build remaining 5 sub-skills (Phase 2)
-11. Add parallel agents + reporting (Phase 3)
+11. ✅ Add parallel agents + `/codeprobe diff` (shipped v2.2.0); PDF/SARIF reporting still open

@@ -15,8 +15,8 @@ allowed-tools:
 ## Standalone Mode
 
 If invoked directly (not via the orchestrator), you must first:
-1. Read `../codeprobe/shared-preamble.md` for the output contract, execution modes, and constraints.
-2. Load applicable reference files from `../codeprobe/references/` based on the project's tech stack.
+1. Read `../codeprobe/shared-preamble.md` (resolve relative to this SKILL.md's location — the sibling `codeprobe` skill directory — not the user's project) for the output contract, execution modes, and constraints.
+2. Load applicable reference files from `../codeprobe/references/` (same resolution) based on the project's tech stack.
 3. Default to `full` mode unless the user specifies otherwise.
 
 # Design Patterns Advisor

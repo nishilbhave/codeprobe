@@ -66,7 +66,7 @@ Examples:
 Analyze the target path thoroughly. Produce detailed findings for every detected issue with all required fields. Include refactored_sketch for critical and major findings where it adds clarity.
 
 ### `scan` Mode
-Quick count of issues by severity. Identify the worst offenders. Skip `evidence` and `fix_prompt` fields. Return counts per category, counts by severity, and top 3 worst-offending files.
+Run the same complete analysis as `full` mode, but trim the output: return (1) issue counts by severity, and (2) your **top 5 candidate findings** — the most impactful issues you found — each with ALL required output-contract fields (including `evidence` and `fix_prompt`). The orchestrator ranks candidates across all sub-skills to build a global top-5, so a candidate missing detail cannot be promoted into the final report. Do not return findings beyond your top 5.
 
 ---
 
@@ -87,6 +87,8 @@ Replace the zeros with actual counts from the analysis.
 
 ## Source Files & References
 
-The orchestrator has pre-loaded all source files and reference guides. They are provided below — do NOT use Read, Glob, or Grep to re-read them. Analyze the provided content directly.
+The orchestrator provides a **file manifest** (paths + line counts + detected stacks) and the **paths** of applicable reference guides. Use Read, Grep, and Glob to inspect the source files relevant to your detection tables — you know your domain best, so target what matters (e.g., the security sub-skill prioritizes routes, controllers, config, and templates; the testing sub-skill prioritizes test directories and their subjects). Do not read every file blindly, but do not skip files your tables need either — an unread file is an unreviewed file.
 
-If you need to check something not covered in the provided files (e.g., .gitignore existence, specific config files not in the source listing), you may use Read/Grep/Glob for those targeted lookups only.
+Read the reference guide(s) relevant to your findings before finalizing severities and fix prompts.
+
+**Degraded mode exception:** if the code was pasted or uploaded in-context (no filesystem), analyze the provided content directly — no manifest or Read calls involved.

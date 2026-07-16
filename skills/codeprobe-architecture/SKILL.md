@@ -15,8 +15,8 @@ allowed-tools:
 ## Standalone Mode
 
 If invoked directly (not via the orchestrator), you must first:
-1. Read `../codeprobe/shared-preamble.md` for the output contract, execution modes, and constraints.
-2. Load applicable reference files from `../codeprobe/references/` based on the project's tech stack.
+1. Read `../codeprobe/shared-preamble.md` (resolve relative to this SKILL.md's location — the sibling `codeprobe` skill directory — not the user's project) for the output contract, execution modes, and constraints.
+2. Load applicable reference files from `../codeprobe/references/` (same resolution) based on the project's tech stack.
 3. Default to `full` mode unless the user specifies otherwise.
 
 # Architecture & Structure Analyzer
@@ -53,7 +53,7 @@ This sub-skill detects architectural and structural issues across these categori
 |-----------|---------------|---------------|----------|
 | `ARCH` | Controllers containing business logic | Scan files in controller directories (`controllers/`, `Controllers/`, `routes/`, `api/`). Flag controllers that contain: database queries (SQL, ORM query builders beyond simple `find()`/`findById()`), complex conditionals with business rules (3+ branches), calculations, data transformations, or validation logic beyond simple field presence checks. Controllers should delegate to services/actions. | Major |
 | `ARCH` | Models/entities containing presentation logic | Scan model/entity files. Flag models that contain: HTML generation, string formatting for display (e.g., `toHtml()`, `formatForDisplay()`), view-specific transformations, CSS class computation, or response formatting. Models should contain domain logic, not presentation. | Major |
-| `ARCH` | Views/components calling database directly | Scan view files (`.blade.php`, `.vue`, `.jsx`/`.tsx` components, `.ejs`, `.pug`, Jinja templates). Flag views that contain: direct database queries, ORM calls, raw SQL, or repository method calls. Views should receive data from controllers/props, never fetch it themselves. | Critical |
+| `ARCH` | Views/components calling database directly | Scan view files (`.blade.php`, `.vue`, `.jsx`/`.tsx` components, `.ejs`, `.pug`, Jinja templates). Flag views that contain: direct database queries, ORM calls, raw SQL, or repository method calls. Views should receive data from controllers/props, never fetch it themselves. | Major |
 
 ### Circular Dependencies
 
@@ -77,7 +77,7 @@ When invoked via `/codeprobe audit` or `/codeprobe architecture`, the orchestrat
 
 | ID Prefix | What to Detect | How to Detect | Severity |
 |-----------|---------------|---------------|----------|
-| `ARCH` | File exceeds 500 LOC | Count total lines in each source file (excluding blank lines and comments). Flag files exceeding 500 LOC. For files exceeding 1000 LOC, escalate to critical. | Major |
+| `ARCH` | File exceeds 500 LOC | Count total lines in each source file (excluding blank lines and comments). Flag files exceeding 500 LOC. Note the overage in the finding (a 2,000-LOC file is a stronger Major than a 550-LOC one), but never escalate beyond Major — oversized files are a maintainability risk, not a production defect. | Major |
 | `ARCH` | Class with 20+ methods | Count public, protected, and private methods in each class. Flag classes with 20+ methods. List the method groups to suggest how the class could be split. | Major |
 | `ARCH` | Single file handling request-to-response lifecycle | Look for files that handle the full request lifecycle: receiving/parsing the request, validating input, executing business logic, performing persistence, formatting the response, and logging — all in one file or class. Flag when 4+ of these concerns are in a single file. | Major |
 
@@ -114,7 +114,7 @@ When invoked via `/codeprobe audit` or `/codeprobe architecture`, the orchestrat
 
 ## Using `file_stats.py`
 
-When available, run the file_stats.py script via Bash to get LOC, class count, and method count per file. The script is located in the `review` skill's `scripts/` directory (resolve relative to the skill installation, not the user's project):
+When available, run the file_stats.py script via Bash to get LOC, class count, and method count per file. The script is located in the codeprobe skill's `scripts/` directory (resolve relative to the skill installation, not the user's project):
 
 ```bash
 python3 scripts/file_stats.py <target_path>

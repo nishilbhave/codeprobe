@@ -8,25 +8,6 @@ When a gap is closed (shipped, declined, or rolled into another change), move it
 
 ## Open
 
-### Gap 1 — Conflicting Recommendations between sub-skills
-
-**Source:** dev.to comment on [the multi-agent code review post](https://dev.to/nishilbhave/i-built-a-multi-agent-code-review-skill-for-claude-code-heres-how-it-works-366i), 2026-05. (Commenter handle: TODO)
-> "when two domain experts disagree (e.g., the SOLID reviewer wants an abstraction the performance reviewer flags as overhead), do you let them argue, or does the orchestrator just present both? We've gone back and forth on that one."
-
-**Problem:** When two sub-skills emit *opposite recommendations* at the same location (SOLID says extract, performance says inline), the current §7A dedup logic in `codeprobe/SKILL.md` keeps one and demotes the other to a suggestion. That dedup logic was designed for "same issue, different lens" (a god-class flagged as both SRP and code-smell) — it silently picks a winner in a case where the operator needs to see the tradeoff and decide.
-
-**Options:**
-
-1. **Detect-and-present (recommended starting point).** Curated table of known conflict pairs (e.g., SOLID-extract ↔ PERF-overhead, ARCH-decouple ↔ PERF-locality, SOLID-introduce-interface ↔ PATTERN-yagni). When dedup groups two findings at the same location matching a pair, route them to a new "Conflicting Recommendations" section in the report instead of dedup'ing. Static, deterministic, ~50 lines plus a section template. Misses novel conflicts.
-2. **Semantic conflict detection.** One LLM call per overlap to compare the two `suggestion` fields and classify as compatible / orthogonal / conflicting. Catches novel conflicts but adds cost per audit and introduces a new failure mode (the classifier itself drifts).
-3. **Agents-argue adjudication.** Spin up a meta-agent to pick a winner. Cheapest to *describe*, worst in practice — the meta-agent has its own biases, picks are unstable run-to-run, and the right answer is usually "depends on context the model doesn't have." Don't ship this.
-
-**Status:** Not decided. Leaning toward Option 1 if we ship anything. Before investing, want to know the **base rate** — scan past audit reports in `./codeprobe-reports/` and count how often overlapping findings at the same location actually point in opposite directions. If <1% of audits, this is over-engineering.
-
-**Related:** Gap 3 (broader disagreement policy) — whatever we decide here sets the precedent.
-
----
-
 ### Gap 2 — Intent / spec review (the "wrong thing built well" problem)
 
 **Source:** dev.to comment on [the multi-agent code review post](https://dev.to/nishilbhave/i-built-a-multi-agent-code-review-skill-for-claude-code-heres-how-it-works-366i), 2026-05. (Commenter handle: TODO)
@@ -64,12 +45,23 @@ Open questions before committing to 2:
 2. **Explicit disagreement policy section in `codeprobe/SKILL.md`.** Write down the rules for each disagreement shape: opposite recommendations → conflict section; severity mismatch → take the higher; suppression overrides finding → skip silently with a debug note. Forces the design choices to be explicit, makes future contributions easier to reason about.
 3. **Sub-skills emit confidence scores; orchestrator weights them.** Each finding includes a confidence rating; conflicts resolved by weighted vote. More principled but adds a field to the contract and assumes sub-skills can self-assess confidence (they often can't).
 
-**Status:** Not decided. Option 2 is probably the right next step but only worth doing once we've shipped Gap 1's solution and seen what other disagreement shapes show up in practice. Option 3 feels over-engineered for the current scale.
+**Status:** Partially addressed in v2.2.0 — the opposite-recommendations rule is now explicit in §7A (conflicts skip dedup and render in a "Conflicting Recommendations" section; see Gap 1 under Closed). The other disagreement shapes (severity mismatch between sub-skills, suppression-vs-finding, "missing test" vs "intentionally untested") remain undecided. Option 2 (a full disagreement-policy section) is still the likely next step once we see which shapes show up in real audits.
 
-**Related:** Gap 1 is the concrete instance that will force this question into the open.
+**Related:** Gap 1 (Closed) was the concrete instance that forced the first rule into the open.
 
 ---
 
 ## Closed
 
-*(none yet)*
+### Gap 1 — Conflicting Recommendations between sub-skills *(shipped, v2.2.0 — 2026-07-16)*
+
+**Source:** dev.to comment on [the multi-agent code review post](https://dev.to/nishilbhave/i-built-a-multi-agent-code-review-skill-for-claude-code-heres-how-it-works-366i), 2026-05. (Commenter handle: TODO)
+> "when two domain experts disagree (e.g., the SOLID reviewer wants an abstraction the performance reviewer flags as overhead), do you let them argue, or does the orchestrator just present both? We've gone back and forth on that one."
+
+**Problem (as logged):** When two sub-skills emit *opposite recommendations* at the same location, the §7A dedup logic silently picked a winner and demoted the loser to a suggestion — designed for "same issue, different lens," misapplied to genuine disagreement.
+
+**What shipped:** A minimal version of Option 1 (detect-and-present), without the curated pair table. §7A now checks each overlap group for opposing recommendations *before* dedup'ing; conflicts keep both findings at full severity and render in a "Conflicting Recommendations" section of the audit report (new block in `templates/full-audit-report.md`) with a one-line tradeoff note. Detection relies on the orchestrator judging "opposite directions" from the two `suggestion` fields rather than a static pair list.
+
+**Still open (folded into Gap 3):** whether a curated conflict-pair table is worth adding. Before investing, measure the **base rate** — scan past audit reports in `./codeprobe-reports/` and count how often overlapping findings actually point in opposite directions. If <1% of audits, the table is over-engineering.
+
+**Options considered:** (1) detect-and-present with curated pair table — shipped without the table; (2) semantic conflict detection via a dedicated LLM call per overlap — rejected for cost and classifier drift; (3) agents-argue adjudication — rejected: unstable picks, and the right answer usually depends on context the model doesn't have.

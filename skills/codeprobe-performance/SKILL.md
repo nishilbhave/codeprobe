@@ -16,8 +16,8 @@ allowed-tools:
 ## Standalone Mode
 
 If invoked directly (not via the orchestrator), you must first:
-1. Read `../codeprobe/shared-preamble.md` for the output contract, execution modes, and constraints.
-2. Load applicable reference files from `../codeprobe/references/` based on the project's tech stack.
+1. Read `../codeprobe/shared-preamble.md` (resolve relative to this SKILL.md's location — the sibling `codeprobe` skill directory — not the user's project) for the output contract, execution modes, and constraints.
+2. Load applicable reference files from `../codeprobe/references/` (same resolution) based on the project's tech stack.
 3. Default to `full` mode unless the user specifies otherwise.
 
 # Performance & Scalability Auditor
@@ -53,8 +53,8 @@ This sub-skill detects performance and scalability issues across these categorie
 
 | ID Prefix | What to Detect | How to Detect | Severity |
 |-----------|---------------|---------------|----------|
-| `PERF` | Eloquent relationship access inside loop without eager loading | Search for `foreach`/`for` loops iterating over a collection, then accessing a relationship property (e.g., `$order->items`, `$user->profile`) inside the loop body. Check whether the query that produced the collection includes `with()` or `load()` for that relationship. | Critical |
-| `PERF` | Any ORM lazy-loading inside iteration | Look for patterns where a database query is implicitly triggered inside a loop: Django querysets accessed per-iteration, SQLAlchemy lazy loads, Prisma relation access in `.map()`. | Critical |
+| `PERF` | Eloquent relationship access inside loop without eager loading | Search for `foreach`/`for` loops iterating over a collection, then accessing a relationship property (e.g., `$order->items`, `$user->profile`) inside the loop body. Check whether the query that produced the collection includes `with()` or `load()` for that relationship. | Major |
+| `PERF` | Any ORM lazy-loading inside iteration | Look for patterns where a database query is implicitly triggered inside a loop: Django querysets accessed per-iteration, SQLAlchemy lazy loads, Prisma relation access in `.map()`. | Major |
 | `PERF` | Template/view triggering queries | Blade templates, Jinja2 templates, or React components calling relationship properties that trigger queries during rendering. | Major |
 
 ### Missing Indexes
